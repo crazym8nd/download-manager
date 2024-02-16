@@ -1,0 +1,14 @@
+server:
+  port: 8088
+
+spring:
+  r2dbc:
+    url: r2dbc:pool:mysql://localhost:3306/dl_manager_data
+    username: root
+    password: 666666
+  liquibase:
+    url: jdbc:mysql://localhost:3306/dl_manager_data
+    user: root
+    password: 666666
+    change-log: db/changelog/app-changelog.xml
+    default-schema: dl_manager_data
