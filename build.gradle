@@ -35,9 +35,10 @@ dependencies {
 	implementation "io.jsonwebtoken:jjwt-api:$jjwtVersion"
 
 	implementation "jakarta.xml.bind:jakarta.xml.bind-api:$jakartabapiVersion"
+	implementation "org.projectlombok:lombok:$lombokVersion"
 
-	annotationProcessor 'org.projectlombok:lombok'
-	annotationProcessor "org.mapstruct:mapstruct-processor:$mapstructVersion"
+	annotationProcessor "org.projectlombok:lombok:$lombokVersion"
+	compileOnly "org.projectlombok:lombok:$lombokVersion"
 
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'

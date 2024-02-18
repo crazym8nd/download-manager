@@ -1,7 +1,9 @@
 server:
-  port: 8088
+  port: 8083
 
 spring:
+  jackson:
+    time-zone: Europe/Moscow
   r2dbc:
     url: r2dbc:pool:mysql://localhost:3306/dl_manager_data
     username: root
@@ -12,3 +14,13 @@ spring:
     password: 666666
     change-log: db/changelog/app-changelog.xml
     default-schema: dl_manager_data
+
+jwt:
+  password:
+      encoder:
+        secret: 3ef45f2e73ffecccffbebafe18ddb3e323b66b4ecbfcfa8ef8a8f994f606f659
+        iteration: 64
+        keyLength: 256
+  secret: 619a6f12e315d17239d4414f9fe1abf6f1a890713086b34d470446d139a25b74
+  expiration: 3600
+  issuer: dl_manager
