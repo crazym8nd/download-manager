@@ -28,17 +28,12 @@ public class PBFDK2Encoder implements PasswordEncoder {
 
     private static final String SECRET_KEY_INSTANCE = "PBKDF2WithHmacSHA512";
 
-    // getting encoded password
     @Override
-    public String encode(CharSequence password) {
-
-        if(password == null || password.length() == 0) {
-            throw new IllegalArgumentException("password cannot be null or empty");
-        }
+    public String encode(CharSequence rawPassword) {
 
         try {
             byte [] result = SecretKeyFactory.getInstance(SECRET_KEY_INSTANCE)
-                    .generateSecret(new PBEKeySpec(password.toString().toCharArray(),
+                    .generateSecret(new PBEKeySpec(rawPassword.toString().toCharArray(),
                             secret.getBytes(), iteration, keyLength))
                     .getEncoded();
 

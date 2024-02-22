@@ -13,12 +13,11 @@ import java.time.LocalDateTime;
 
 
 
+@Data
 @Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
 @Table("users")
-@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class UserEntity {
 
     @Id

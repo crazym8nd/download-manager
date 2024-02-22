@@ -35,18 +35,21 @@ public class WebSecurityConfig {
         return http
                 .csrf().disable()
                 .authorizeExchange()
-                .pathMatchers(HttpMethod.OPTIONS).permitAll()
-                .pathMatchers(publicRoutes).permitAll()
+                .pathMatchers(HttpMethod.OPTIONS)
+                .permitAll()
+                .pathMatchers(publicRoutes)
+                .permitAll()
                 .anyExchange()
                 .authenticated()
                 .and()
                 .exceptionHandling()
-                .authenticationEntryPoint((swe,e) -> {
-                   log.error("IN securityWebFilterChain - unauthorized error: {}",e.getMessage());
+                .authenticationEntryPoint((swe , e) -> {
+                    log.error("IN securityWebFilterChain - unauthorized error: {}", e.getMessage());
                     return Mono.fromRunnable(() -> swe.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED));
                 })
-                .accessDeniedHandler((swe,e) -> {
-                    log.error("IN securityWebFilterChain - access denied: {}",e.getMessage());
+                .accessDeniedHandler((swe, e) -> {
+                    log.error("IN securityWebFilterChain - access denied: {}", e.getMessage());
+
                     return Mono.fromRunnable(() -> swe.getResponse().setStatusCode(HttpStatus.FORBIDDEN));
                 })
                 .and()
@@ -55,11 +58,10 @@ public class WebSecurityConfig {
     }
 
     private AuthenticationWebFilter bearerAuthenticationFilter(AuthenticationManager authenticationManager) {
-        AuthenticationWebFilter filter = new AuthenticationWebFilter(authenticationManager);
-        filter.setServerAuthenticationConverter(new BearerTokenServerAuthenticationConverter(new JwtHandler(secret)));
-        filter.setRequiresAuthenticationMatcher(ServerWebExchangeMatchers.pathMatchers("/**"));
+        AuthenticationWebFilter bearerAuthenticationFilter = new AuthenticationWebFilter(authenticationManager);
+        bearerAuthenticationFilter.setServerAuthenticationConverter(new BearerTokenServerAuthenticationConverter(new JwtHandler(secret)));
+        bearerAuthenticationFilter.setRequiresAuthenticationMatcher(ServerWebExchangeMatchers.pathMatchers("/**"));
 
-        return filter;
-
+        return bearerAuthenticationFilter;
     }
 }

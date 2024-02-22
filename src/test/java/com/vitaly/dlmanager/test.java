@@ -8,22 +8,24 @@ import com.vitaly.dlmanager.entity.UserEntity;
 import com.vitaly.dlmanager.mapper.UserMapper;
 import com.vitaly.dlmanager.mapper.UserMapperImpl;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-
+@SpringBootTest
 public class test {
-    UserMapper userMapper = new UserMapperImpl();
+    @Autowired
+    UserMapper userMapper;
     @Test
     public void test(){
         UserDto dto = new UserDto();
         dto.setUsername("test");
         dto.setPassword("password");
 
-        UserEntity entity = userMapper.mapDtoToEntity(dto);
+        UserEntity entity = userMapper.map(dto);
 
 
         assertEquals(dto.getUsername(), entity.getUsername());
         assertEquals(dto.getPassword(), entity.getPassword());
     }
 }
-// MAPPER FIX!!!!

@@ -12,9 +12,10 @@ import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface UserMapper {
-    UserDto mapEntityToDto(UserEntity userEntity);
+   UserDto map(UserEntity userEntity);
 
-    @InheritInverseConfiguration
-    UserEntity mapDtoToEntity(UserDto userDto);
+   @InheritInverseConfiguration
+   UserEntity map(UserDto dto);
+
 
 }

@@ -52,6 +52,7 @@ public class SecurityService {
             Date createdDate = new Date();
             String token = Jwts.builder()
                     .setClaims(claims)
+                    .setIssuer(issuer)
                     .setSubject(subject)
                     .setIssuedAt(createdDate)
                     .setId(UUID.randomUUID().toString())

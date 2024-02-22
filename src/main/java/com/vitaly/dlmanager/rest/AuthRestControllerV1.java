@@ -26,33 +26,30 @@ public class AuthRestControllerV1 {
     private final UserMapper userMapper;
 
     @PostMapping("/register")
-    public Mono<UserDto> register(@RequestBody UserDto userDto){
-
-        if (userDto.getPassword() == null || userDto.getPassword().isEmpty()) {
-            throw new IllegalArgumentException("The password cannot be null or empty");
-        }
-
-        UserEntity entity = userMapper.mapDtoToEntity(userDto);
+    public Mono<UserDto> register(@RequestBody UserDto dto) {
+        UserEntity entity = userMapper.map(dto);
         return userService.registerUser(entity)
-                .map(userMapper::mapEntityToDto);
+                .map(userMapper::map);
     }
 
     @PostMapping("/login")
-    public Mono<AuthResponseDto> login(@RequestBody AuthRequestDto dto){
-
+    public Mono<AuthResponseDto> login(@RequestBody AuthRequestDto dto) {
         return securityService.authenticate(dto.getUsername(), dto.getPassword())
-                .flatMap(tokenDetails -> Mono.just(AuthResponseDto.builder()
-                        .userId(tokenDetails.getUserId())
-                        .token(tokenDetails.getToken())
-                        .issuedAt(tokenDetails.getIssuedAt())
-                        .expiresAt(tokenDetails.getExpiresAt())
-                        .build()));
+                .flatMap(tokenDetails -> Mono.just(
+                        AuthResponseDto.builder()
+                                .userId(tokenDetails.getUserId())
+                                .token(tokenDetails.getToken())
+                                .issuedAt(tokenDetails.getIssuedAt())
+                                .expiresAt(tokenDetails.getExpiresAt())
+                                .build()
+                ));
     }
 
     @GetMapping("/info")
-    public Mono<UserDto> getUserInfo(Authentication auth){
-        CustomPrincipal principal = (CustomPrincipal) auth.getPrincipal();
-        return userService.getUserById(principal.getId())
-                .map(userMapper::mapEntityToDto);
+    public Mono<UserDto> getUserInfo(Authentication authentication) {
+        CustomPrincipal customPrincipal = (CustomPrincipal) authentication.getPrincipal();
+
+        return userService.getUserById(customPrincipal.getId())
+                .map(userMapper::map);
     }
 }

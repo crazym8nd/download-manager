@@ -18,7 +18,6 @@ public class CustomPrincipal implements Principal {
     private Long id;
     private String username;
 
-
     @Override
     public String getName() {
         return username;
