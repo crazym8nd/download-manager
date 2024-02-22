@@ -29,6 +29,8 @@ dependencies {
 
 	implementation "com.github.spotbugs:spotbugs:$spotbugsVersion"
 
+	implementation "org.projectlombok:lombok:$lombokVersion"
+
 	implementation "io.jsonwebtoken:jjwt-api:$jjwtVersion"
 	runtimeOnly "io.jsonwebtoken:jjwt-impl:$jjwtVersion"
 	runtimeOnly "io.jsonwebtoken:jjwt-jackson:$jjwtVersion"
@@ -41,6 +43,9 @@ dependencies {
 
 	implementation "org.mapstruct:mapstruct:$mapstructVersion"
 	annotationProcessor "org.mapstruct:mapstruct-processor:$mapstructVersion"
+
+	implementation "com.amazonaws:aws-java-sdk:$awsSdkVersion"
+
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'io.projectreactor:reactor-test'

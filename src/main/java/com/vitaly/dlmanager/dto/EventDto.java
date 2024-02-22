@@ -1,27 +1,22 @@
 package com.vitaly.dlmanager.dto;
-//  17-Feb-24
+//  22-Feb-24
 // gh crazym8nd
 
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import com.vitaly.dlmanager.entity.user.UserRole;
 import com.vitaly.dlmanager.entity.Status;
+import com.vitaly.dlmanager.entity.file.FileEntity;
+import com.vitaly.dlmanager.entity.user.UserEntity;
 import lombok.Data;
-
 import java.time.LocalDateTime;
-
 
 @Data
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class UserDto {
+public class EventDto {
     private Long id;
-    private String username;
-    private String email;
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    private String password;
-    private UserRole role;
+    private UserEntity user;
+    private FileEntity file;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private Status status;

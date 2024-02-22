@@ -2,10 +2,10 @@ package com.vitaly.dlmanager.security;
 //  17-Feb-24
 // gh crazym8nd
 
-import com.vitaly.dlmanager.entity.UserEntity;
-import com.vitaly.dlmanager.entity.UserStatus;
+import com.vitaly.dlmanager.entity.user.UserEntity;
+import com.vitaly.dlmanager.entity.Status;
 import com.vitaly.dlmanager.exception.AuthException;
-import com.vitaly.dlmanager.service.UserService;
+import com.vitaly.dlmanager.service.impl.UserServiceImpl;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +22,7 @@ import java.util.*;
 @RequiredArgsConstructor
 public class SecurityService {
 
-    private final UserService userService;
+    private final UserServiceImpl userServiceImpl;
     private final PasswordEncoder passwordEncoder;
 
     @Value("${jwt.secret}")
@@ -67,9 +67,9 @@ public class SecurityService {
                 .build();
     }
     public Mono<TokenDetails> authenticate(String username, String password) {
-        return userService.getUserByUsername(username)
+        return userServiceImpl.getUserByUsername(username)
                 .flatMap(user ->{
-                    if(user.getStatus().equals(UserStatus.DELETED)){
+                    if(user.getStatus().equals(Status.DELETED)){
                         return Mono.error(new AuthException("User deleted", "USER_IS_DELETED"));
                     }
 

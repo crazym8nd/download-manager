@@ -5,11 +5,11 @@ package com.vitaly.dlmanager.rest;
 import com.vitaly.dlmanager.dto.AuthRequestDto;
 import com.vitaly.dlmanager.dto.AuthResponseDto;
 import com.vitaly.dlmanager.dto.UserDto;
-import com.vitaly.dlmanager.entity.UserEntity;
+import com.vitaly.dlmanager.entity.user.UserEntity;
 import com.vitaly.dlmanager.mapper.UserMapper;
 import com.vitaly.dlmanager.security.CustomPrincipal;
 import com.vitaly.dlmanager.security.SecurityService;
-import com.vitaly.dlmanager.service.UserService;
+import com.vitaly.dlmanager.service.impl.UserServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -22,13 +22,13 @@ import reactor.core.publisher.Mono;
 public class AuthRestControllerV1 {
 
     private final SecurityService securityService;
-    private final UserService userService;
+    private final UserServiceImpl userServiceImpl;
     private final UserMapper userMapper;
 
     @PostMapping("/register")
     public Mono<UserDto> register(@RequestBody UserDto dto) {
         UserEntity entity = userMapper.map(dto);
-        return userService.registerUser(entity)
+        return userServiceImpl.registerUser(entity)
                 .map(userMapper::map);
     }
 
@@ -49,7 +49,7 @@ public class AuthRestControllerV1 {
     public Mono<UserDto> getUserInfo(Authentication authentication) {
         CustomPrincipal customPrincipal = (CustomPrincipal) authentication.getPrincipal();
 
-        return userService.getUserById(customPrincipal.getId())
+        return userServiceImpl.getUserById(customPrincipal.getId())
                 .map(userMapper::map);
     }
 }

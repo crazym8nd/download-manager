@@ -22,3 +22,9 @@ jwt:
   secret: 619a6f12e315d17239d4414f9fe1abf6f1a890713086b34d470446d139a25b74
   expiration: 3600
   issuer: dl_manager
+
+s3:
+  accessKey: <accessKey>
+  secretKey: <secretKey>
+  region: <region aws>
+  bucketName: <bucketName>

@@ -1,10 +1,9 @@
-package com.vitaly.dlmanager.entity;
+package com.vitaly.dlmanager.entity.user;
 //  17-Feb-24
 // gh crazym8nd
 
 
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import com.vitaly.dlmanager.entity.Status;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;
@@ -28,7 +27,7 @@ public class UserEntity {
     private UserRole role;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private UserStatus status;
+    private Status status;
 
     @ToString.Include(name = "password")
     private String maskPassword() {

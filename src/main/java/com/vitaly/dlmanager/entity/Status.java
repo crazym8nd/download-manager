@@ -3,7 +3,7 @@ package com.vitaly.dlmanager.entity;
 // gh crazym8nd
 
 
-public enum UserStatus {
+public enum Status {
     ACTIVE,
     DELETED
 }
