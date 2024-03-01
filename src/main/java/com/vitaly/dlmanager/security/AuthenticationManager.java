@@ -21,7 +21,7 @@ public class AuthenticationManager implements ReactiveAuthenticationManager {
     public Mono<Authentication> authenticate(Authentication authentication) {
         CustomPrincipal principal = (CustomPrincipal) authentication.getPrincipal();
 
-        return userServiceImpl.getUserById(principal.getId())
+        return userServiceImpl.getById(principal.getId())
                 .filter(userEntity -> userEntity.getStatus().equals(Status.ACTIVE))
                 .switchIfEmpty(Mono.error(new UnauthorizedException("User deleted")))
                 .map(user -> authentication);

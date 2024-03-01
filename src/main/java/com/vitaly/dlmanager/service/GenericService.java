@@ -3,11 +3,16 @@ package com.vitaly.dlmanager.service;
 // gh crazym8nd
 
 
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
 import java.util.List;
 
 public interface GenericService <T,ID>{
-    T getById(ID id);
-    List<T> getAll();
 
-    void deleteById(ID id);
+    Flux<T> getAll();
+    Mono<T> getById(ID id);
+    Mono update(T t);
+    Mono save(T t);
+    Mono delete(ID id);
 }

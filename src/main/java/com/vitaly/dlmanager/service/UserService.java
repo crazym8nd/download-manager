@@ -9,10 +9,6 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
 public interface UserService extends GenericService<UserEntity,Long> {
-
-    Mono<UserEntity> registerUser(UserEntity user);
-
-    Mono<UserEntity> getUserById(Long id);
     Mono<UserEntity> getUserByUsername(String username);
 
 }

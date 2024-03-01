@@ -13,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
@@ -20,26 +22,17 @@ import java.util.List;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
-    private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
+    private UserRepository userRepository;
+    private  PasswordEncoder passwordEncoder;
 
-    public Mono<UserEntity> registerUser(UserEntity user){
-        return userRepository.save(
-                user.toBuilder()
-                .password(passwordEncoder.encode(user.getPassword()))
-                .role(UserRole.USER)
-                .status(Status.ACTIVE)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
-                .build()
-                ).doOnSuccess(u -> {
-                    log.info("IN registerUserUser - user {} created", u);
-        });
+    @Autowired
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
-    public Mono<UserEntity> getUserById(Long id){
-        return userRepository.findById(id);
+    public UserServiceImpl(UserRepository userRepository) {
+
     }
 
     public Mono<UserEntity> getUserByUsername(String username){
@@ -47,17 +40,46 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserEntity getById(Long aLong) {
-        return null;
+    public Flux<UserEntity> getAll() {
+        return this.userRepository.findAll();
     }
 
     @Override
-    public List<UserEntity> getAll() {
-        return null;
+    public Mono<UserEntity> getById(Long id) {
+        return this.userRepository.findById(id);
     }
 
     @Override
-    public void deleteById(Long aLong) {
+    @Transactional
+    public Mono<UserEntity> update(UserEntity userEntity) {
+        return this.userRepository.findById(userEntity.getId())
+                .flatMap((u ->{
+                    u.setStatus(userEntity.getStatus());
+                    return this.userRepository.save(userEntity);
+                }));
+    }
 
+    @Override
+    public Mono<UserEntity> save(UserEntity user) {
+        return userRepository.save(
+                user.toBuilder()
+                        .password(passwordEncoder.encode(user.getPassword()))
+                        .role(UserRole.USER)
+                        .status(Status.ACTIVE)
+                        .createdAt(LocalDateTime.now())
+                        .updatedAt(LocalDateTime.now())
+                        .build()
+        ).doOnSuccess(u -> {
+            log.info("IN registerUserUser - user {} created", u);
+        });
+    }
+
+    @Override
+    @Transactional
+    public Mono<UserEntity> delete(Long id) {
+        return this.userRepository
+                .findById(id)
+                .flatMap(u ->
+                        this.userRepository.deleteById(u.getId()).thenReturn(u));
     }
 }

@@ -4,12 +4,7 @@ package com.vitaly.dlmanager.service;
 
 
 import com.vitaly.dlmanager.entity.event.EventEntity;
-import com.vitaly.dlmanager.entity.user.UserEntity;
-import org.mapstruct.control.MappingControl;
+
 
 public interface EventService extends GenericService<EventEntity,Long> {
-    EventEntity create(EventEntity event);
-
-    EventEntity update(EventEntity event);
-
 }

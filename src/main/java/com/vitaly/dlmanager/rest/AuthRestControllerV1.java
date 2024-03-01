@@ -28,8 +28,9 @@ public class AuthRestControllerV1 {
     @PostMapping("/register")
     public Mono<UserDto> register(@RequestBody UserDto dto) {
         UserEntity entity = userMapper.map(dto);
-        return userServiceImpl.registerUser(entity)
-                .map(userMapper::map);
+        userServiceImpl.save(entity);
+        UserDto dtoAFter= userMapper.map(entity);
+        return Mono.just(dtoAFter);
     }
 
     @PostMapping("/login")
@@ -49,7 +50,7 @@ public class AuthRestControllerV1 {
     public Mono<UserDto> getUserInfo(Authentication authentication) {
         CustomPrincipal customPrincipal = (CustomPrincipal) authentication.getPrincipal();
 
-        return userServiceImpl.getUserById(customPrincipal.getId())
+        return userServiceImpl.getById(customPrincipal.getId())
                 .map(userMapper::map);
     }
 }
