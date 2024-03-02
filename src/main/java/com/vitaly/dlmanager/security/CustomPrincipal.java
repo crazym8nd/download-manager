@@ -6,8 +6,6 @@ package com.vitaly.dlmanager.security;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import javax.security.auth.Subject;
 import java.security.Principal;
 
 @Data

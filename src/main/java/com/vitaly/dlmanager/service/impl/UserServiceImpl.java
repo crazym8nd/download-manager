@@ -69,9 +69,7 @@ public class UserServiceImpl implements UserService {
                         .createdAt(LocalDateTime.now())
                         .updatedAt(LocalDateTime.now())
                         .build()
-        ).doOnSuccess(u -> {
-            log.info("IN registerUserUser - user {} created", u);
-        });
+        ).doOnSuccess(u -> log.info("IN registerUserUser - user {} created", u));
     }
 
     @Override

@@ -20,7 +20,7 @@ import java.util.List;
 @Slf4j
 public class EventServiceImpl implements EventService {
 
-    private EventRepository eventRepository;
+    private final EventRepository eventRepository;
 
     @Autowired
     public EventServiceImpl(EventRepository eventRepository) {
@@ -57,9 +57,7 @@ public class EventServiceImpl implements EventService {
                         .createdAt(LocalDateTime.now())
                         .updatedAt(LocalDateTime.now())
                         .build()
-        ).doOnSuccess(e -> {
-            log.info("IN createEvent - event {} crated", e);
-        });
+        ).doOnSuccess(e -> log.info("IN createEvent - event {} crated", e));
     }
 
     @Override

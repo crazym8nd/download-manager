@@ -9,15 +9,19 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.Bucket;
 import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.S3Object;
+import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.vitaly.dlmanager.entity.file.FileEntity;
 import com.vitaly.dlmanager.repository.FileRepository;
 import com.vitaly.dlmanager.service.FileService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.io.InputStream;
 import java.time.LocalDateTime;
@@ -31,7 +35,8 @@ public class FileServiceImpl implements FileService {
 
     private  AmazonS3 s3client;
 
-    private final String BUCKET_NAME = "crazym8nd";
+    @Value("${s3.bucketName}")
+    private String BUCKET_NAME;
 
     public FileServiceImpl(AmazonS3 s3client){
         this.s3client =s3client;
@@ -58,8 +63,7 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public void upload(FileEntity file) {
-        String bucketName = BUCKET_NAME;
+    public Mono<Void> upload(FileEntity file) {
         java.io.File fileToUpload = new java.io.File(file.getLocation());
         file.setCreatedAt(LocalDateTime.now());
         log.info("File uploaded {}", file.getFileName());
@@ -71,6 +75,7 @@ public class FileServiceImpl implements FileService {
         } catch (SdkClientException e){
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error #2 uploading file", e);
         }
+        return Mono.empty();
     }
 
     @Override
@@ -86,15 +91,16 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public Optional<String> listFiles() {
+    public Flux<String> listFiles() {
         String bucketName = BUCKET_NAME;
         ObjectListing objectListing = s3client.listObjects(bucketName);
         if(objectListing != null){
             log.info("All files");
-            return Optional.of(String.valueOf(objectListing.getObjectSummaries()));
+            return Flux.fromIterable(objectListing.getObjectSummaries())
+                    .map(S3ObjectSummary::getKey);
         } else {
             log.info("No files");
-            return Optional.empty();
+            return Flux.empty();
         }
     }
 
