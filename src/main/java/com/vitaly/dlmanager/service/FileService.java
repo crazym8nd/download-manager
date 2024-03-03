@@ -4,18 +4,18 @@ package com.vitaly.dlmanager.service;
 
 
 import com.vitaly.dlmanager.entity.file.FileEntity;
+import org.springframework.web.multipart.MultipartFile;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.io.InputStream;
-import java.util.Optional;
 
 public interface FileService {
-    Mono<Void> upload(FileEntity fileEntity);
+    String upload(MultipartFile file);
 
-    InputStream download(FileEntity file);
+    byte[] download(String fileName);
 
     Flux<String> listFiles();
 
-    void deleteFile(String fileName);
+    void delete(String fileName);
 }

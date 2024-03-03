@@ -15,15 +15,18 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @RequiredArgsConstructor
 public class S3Config {
-
     @Bean
-    public AmazonS3 s3client(@Value("s3.access.key") String accessKey, @Value("s3.secret.key")  String secretKey){
-        AWSCredentials credentials = new BasicAWSCredentials(accessKey, secretKey);
+    public AmazonS3 s3client(){
+        AWSCredentials credentials = new BasicAWSCredentials("YCAJERDXdfQtVXuUKIkCo_Frp", "YCPdKrgWtNVOHcPLo2fPd6viNjHacD1dVWBHSQJs");
 
         return AmazonS3ClientBuilder
                 .standard()
                 .withCredentials(new AWSStaticCredentialsProvider(credentials))
-                .withRegion("central-1")
+                .withEndpointConfiguration(
+                        new AmazonS3ClientBuilder.EndpointConfiguration(
+                                "storage.yandexcloud.net","ru-central1"
+                        )
+                )
                 .build();
     }
 }

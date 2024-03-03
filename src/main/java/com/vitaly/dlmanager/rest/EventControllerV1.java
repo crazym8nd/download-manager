@@ -39,12 +39,10 @@ public class EventControllerV1 {
     }
 
     @GetMapping
-    public Flux<ResponseEntity<EventDto>> getAllEvents(){
-        return eventService.getAll()
-                .map(eventMapper::map)
-                .map(ResponseEntity::ok)
-                .switchIfEmpty(Flux.just(new ResponseEntity<>(HttpStatus.NO_CONTENT)));
-
+    public Mono<ResponseEntity<Flux<EventDto>>> getAllEvents(){
+        Flux<EventDto> eventDtoFlux = eventService.getAll()
+                .map(eventMapper::map);
+        return Mono.just(ResponseEntity.ok(eventDtoFlux));
     }
 
     @PostMapping

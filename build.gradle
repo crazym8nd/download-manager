@@ -45,6 +45,8 @@ dependencies {
 	annotationProcessor "org.mapstruct:mapstruct-processor:$mapstructVersion"
 
 	implementation "com.amazonaws:aws-java-sdk:$awsSdkVersion"
+	implementation "org.springdoc:springdoc-openapi-starter-webflux-ui:$springdocOpenAPIVersion"
+
 
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'

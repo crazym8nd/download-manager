@@ -52,11 +52,10 @@ public class UserControllerV1 {
     }
 
     @GetMapping
-    public Flux<ResponseEntity<UserDto>> getAllUsers() {
-        return userService.getAll()
-                .map(userMapper::map)
-                .map(ResponseEntity::ok)
-                .switchIfEmpty(Flux.just(new ResponseEntity<>(HttpStatus.NO_CONTENT)));
+    public Mono<ResponseEntity<Flux<UserDto>>> getAllUsers() {
+        Flux<UserDto> userDtoFlux = userService.getAll()
+                .map(userMapper::map);
+        return Mono.just(ResponseEntity.ok(userDtoFlux));
     }
 
     @PostMapping

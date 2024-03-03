@@ -16,6 +16,8 @@ import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
+
 @RestController
 @RequestMapping(value = "/api/v1/files/")
 public class FileControllerV1 {
@@ -31,9 +33,10 @@ public class FileControllerV1 {
     }
 
     @GetMapping
-    public Flux<ResponseEntity<String>> listOfFiles() {
+    public Mono<ResponseEntity<List<String>>> listOfFiles() {
         return fileService.listFiles()
-                .map(fileName -> ResponseEntity.ok().body(fileName))
+                .collectList()
+                .map(fileNames -> ResponseEntity.ok().body(fileNames))
                 .defaultIfEmpty(ResponseEntity.notFound().build());
     }
     @DeleteMapping("/{fileName}")

@@ -3,11 +3,11 @@ server:
 
 spring:
   r2dbc:
-    url: r2dbc:pool:mysql://localhost:3306/dl_manager_data
+    url: r2dbc:pool:mysql://localhost:3306/dl_manager_data?serverTimezone=Europe/Moscow
     username: root
     password: 666666
   liquibase:
-    url: jdbc:mysql://localhost:3306/dl_manager_data
+    url: jdbc:mysql://localhost:3306/dl_manager_data?serverTimezone=Europe/Moscow
     user: root
     password: 666666
     change-log: db/changelog/app-changelog.xml
@@ -24,7 +24,4 @@ jwt:
   issuer: dl_manager
 
 s3:
-  accessKey: <>
-  secretKey: <>
-  region: <>
-  bucketName: <>
+
