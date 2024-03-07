@@ -7,11 +7,13 @@ import com.vitaly.dlmanager.mapper.FileMapper;
 import com.vitaly.dlmanager.service.FileService;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -45,33 +47,27 @@ public class FileControllerV1 {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         try {
-            fileService.deleteFile(fileName);
+            fileService.delete(fileName);
             return new ResponseEntity<>(fileName + " deleted successfully.", HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
     @PostMapping
-    public Mono<ResponseEntity<String>> upload(
-            @RequestBody @NonNull FileDto fileDto) {
-        return fileService.upload(fileMapper.map(fileDto))
-                .map(response -> ResponseEntity
-                        .status(HttpStatus.CREATED)
-                        .body("File Uploaded Successfully"));
+    public ResponseEntity<String> uploadFile(@RequestPart("file") @NonNull MultipartFile file) {
+        return new ResponseEntity<>(fileService.uploadFile(file), HttpStatus.OK);
     }
 
     @PutMapping
-    public ResponseEntity<InputStreamResource> download(@RequestBody @NonNull FileDto fileDto){
-        if (fileDto.getFileName() == null){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "File name is required");
-        }
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "attachment; filename=" + fileDto.getFileName());
-        headers.add("Cache-Control", "no-cache, no-store, must-revalidate");
-        headers.add("Pragma", "no-cache");
-        headers.add("Expires", "0");
-        InputStreamResource resource = new InputStreamResource(fileService.download(fileMapper.map(fileDto)));
-        return new ResponseEntity<>(resource, headers, HttpStatus.OK);
+    public ResponseEntity<ByteArrayResource> downloadFile(@PathVariable String fileName) {
+        byte[] content = fileService.downloadFile(fileName);
+        ByteArrayResource resource = new ByteArrayResource(content);
+        return ResponseEntity
+                .ok()
+                .header(HttpHeaders.CONTENT_TYPE, "application/octet-stream")
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")
+                .contentLength(content.length)
+                .body(resource);
     }
+
 }

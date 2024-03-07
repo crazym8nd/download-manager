@@ -24,4 +24,7 @@ jwt:
   issuer: dl_manager
 
 s3:
+  accessKey: YCAJERDXdfQtVXuUKIkCo_Frp
+  secretKey: YCPdKrgWtNVOHcPLo2fPd6viNjHacD1dVWBHSQJs
+  bucketName: springfluxr2dbc
 

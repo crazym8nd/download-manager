@@ -11,9 +11,9 @@ import reactor.core.publisher.Mono;
 import java.io.InputStream;
 
 public interface FileService {
-    String upload(MultipartFile file);
+    String uploadFile(MultipartFile file);
 
-    byte[] download(String fileName);
+    byte[] downloadFile(String fileName);
 
     Flux<String> listFiles();
 

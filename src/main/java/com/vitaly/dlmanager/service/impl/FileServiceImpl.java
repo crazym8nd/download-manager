@@ -7,6 +7,7 @@ import com.amazonaws.AmazonServiceException;
 import com.amazonaws.SdkClientException;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.*;
+import com.amazonaws.util.IOUtils;
 import com.vitaly.dlmanager.entity.file.FileEntity;
 import com.vitaly.dlmanager.repository.FileRepository;
 import com.vitaly.dlmanager.service.FileService;
@@ -58,13 +59,24 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public String upload(MultipartFile file) {
-        //TODO
+    public String uploadFile(MultipartFile file) {
+        String fileName = System.currentTimeMillis()+ "_" + file.getOriginalFilename();
+        s3client.putObject(new PutObjectRequest(BUCKET_NAME, fileName, convertMultipartFileToFile(file)));
+        log.info("File uploaded {}", fileName);
+        return "File uploaded " + fileName;
     }
 
     @Override
-    public byte[] download(String fileName) {
-        //TODO
+    public byte[] downloadFile(String fileName) {
+        S3Object s3Object = s3client.getObject(BUCKET_NAME, fileName);
+        S3ObjectInputStream s3ObjectInputStream = s3Object.getObjectContent();
+        try{
+            byte[] content = IOUtils.toByteArray(s3ObjectInputStream);
+            return content;
+        } catch (IOException e){
+            log.error("Error downloading file {}", fileName, e);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
 
@@ -87,5 +99,15 @@ public class FileServiceImpl implements FileService {
         String bucketName = BUCKET_NAME;
         s3client.deleteObject(bucketName, fileName);
         log.info("File deleted {}", fileName);
+    }
+
+    private File convertMultipartFileToFile(MultipartFile file){
+        File convertedFile = new File(file.getOriginalFilename());
+        try(FileOutputStream fos = new FileOutputStream(convertedFile)){
+            fos.write(file.getBytes());
+        } catch (IOException e) {
+            log.error("Error converting multipartFile to file", e);
+        }
+        return convertedFile;
     }
 }
