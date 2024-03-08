@@ -16,7 +16,7 @@ import java.util.Base64;
 @Component
 public class PBFDK2Encoder implements PasswordEncoder {
 
-@Value("${jwt.password.encoder.secret}")
+    @Value("${jwt.password.encoder.secret}")
     private String secret;
 
     @Value("${jwt.password.encoder.iteration}")
@@ -31,14 +31,14 @@ public class PBFDK2Encoder implements PasswordEncoder {
     public String encode(CharSequence rawPassword) {
 
         try {
-            byte [] result = SecretKeyFactory.getInstance(SECRET_KEY_INSTANCE)
+            byte[] result = SecretKeyFactory.getInstance(SECRET_KEY_INSTANCE)
                     .generateSecret(new PBEKeySpec(rawPassword.toString().toCharArray(),
                             secret.getBytes(), iteration, keyLength))
                     .getEncoded();
 
             return Base64.getEncoder()
                     .encodeToString(result);
-        } catch(NoSuchAlgorithmException | InvalidKeySpecException e) {
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
             throw new RuntimeException(e);
         }
     }

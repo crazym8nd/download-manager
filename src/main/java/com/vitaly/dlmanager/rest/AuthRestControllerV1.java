@@ -11,7 +11,6 @@ import com.vitaly.dlmanager.security.CustomPrincipal;
 import com.vitaly.dlmanager.security.SecurityService;
 import com.vitaly.dlmanager.service.impl.UserServiceImpl;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
@@ -29,7 +28,7 @@ public class AuthRestControllerV1 {
     public Mono<UserDto> register(@RequestBody UserDto dto) {
         UserEntity entity = userMapper.map(dto);
         userServiceImpl.save(entity);
-        UserDto dtoAFter= userMapper.map(entity);
+        UserDto dtoAFter = userMapper.map(entity);
         return Mono.just(dtoAFter);
     }
 

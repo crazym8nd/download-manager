@@ -2,8 +2,8 @@ package com.vitaly.dlmanager.security;
 //  17-Feb-24
 // gh crazym8nd
 
-import com.vitaly.dlmanager.entity.user.UserEntity;
 import com.vitaly.dlmanager.entity.Status;
+import com.vitaly.dlmanager.entity.user.UserEntity;
 import com.vitaly.dlmanager.exception.AuthException;
 import com.vitaly.dlmanager.service.impl.UserServiceImpl;
 import io.jsonwebtoken.Jwts;
@@ -48,17 +48,17 @@ public class SecurityService {
         return generateToken(expirationDate, claims, subject);
     }
 
-    private TokenDetails generateToken(Date expirationDate, Map<String, Object> claims, String subject){
-            Date createdDate = new Date();
-            String token = Jwts.builder()
-                    .setClaims(claims)
-                    .setIssuer(issuer)
-                    .setSubject(subject)
-                    .setIssuedAt(createdDate)
-                    .setId(UUID.randomUUID().toString())
-                    .setExpiration(expirationDate)
-                    .signWith(SignatureAlgorithm.HS256, Base64.getEncoder().encodeToString(secret.getBytes()))
-                    .compact();
+    private TokenDetails generateToken(Date expirationDate, Map<String, Object> claims, String subject) {
+        Date createdDate = new Date();
+        String token = Jwts.builder()
+                .setClaims(claims)
+                .setIssuer(issuer)
+                .setSubject(subject)
+                .setIssuedAt(createdDate)
+                .setId(UUID.randomUUID().toString())
+                .setExpiration(expirationDate)
+                .signWith(SignatureAlgorithm.HS256, Base64.getEncoder().encodeToString(secret.getBytes()))
+                .compact();
 
         return TokenDetails.builder()
                 .token(token)
@@ -66,14 +66,15 @@ public class SecurityService {
                 .expiresAt(expirationDate)
                 .build();
     }
+
     public Mono<TokenDetails> authenticate(String username, String password) {
         return userServiceImpl.getUserByUsername(username)
-                .flatMap(user ->{
-                    if(user.getStatus().equals(Status.DELETED)){
+                .flatMap(user -> {
+                    if (user.getStatus().equals(Status.DELETED)) {
                         return Mono.error(new AuthException("User deleted", "USER_IS_DELETED"));
                     }
 
-                    if(!passwordEncoder.matches(password, user.getPassword())){
+                    if (!passwordEncoder.matches(password, user.getPassword())) {
                         return Mono.error(new AuthException("Ivalid password", "INVALID_PASSWORD"));
                     }
 

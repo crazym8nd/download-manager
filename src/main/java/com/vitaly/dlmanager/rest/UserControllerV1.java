@@ -8,17 +8,13 @@ import com.vitaly.dlmanager.mapper.UserMapper;
 import com.vitaly.dlmanager.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 @RestController
-@RequestMapping(value = "/api/v1/users/")
+@RequestMapping(value = "/api/v1/users")
 public class UserControllerV1 {
 
     private final UserService userService;
@@ -32,7 +28,7 @@ public class UserControllerV1 {
     }
 
     @GetMapping("/{id}")
-    public Mono<ResponseEntity<UserDto>> getUserById(@PathVariable Long id){
+    public Mono<ResponseEntity<UserDto>> getUserById(@PathVariable Long id) {
         return userService.getById(id)
                 .map(user -> {
                     UserDto userDto = userMapper.map(user);
@@ -42,7 +38,7 @@ public class UserControllerV1 {
     }
 
     @GetMapping("/name")
-    public Mono<ResponseEntity<UserDto>> getUserByName(@PathVariable String name){
+    public Mono<ResponseEntity<UserDto>> getUserByName(@PathVariable String name) {
         return userService.getUserByUsername(name)
                 .map(user -> {
                     UserDto userDto = userMapper.map(user);
@@ -74,7 +70,7 @@ public class UserControllerV1 {
             return Mono.just(new ResponseEntity<>(HttpStatus.BAD_REQUEST));
         }
         return userService.update(userEntity)
-                .map(updatedUser -> new ResponseEntity<>(updatedUser , HttpStatus.OK))
+                .map(updatedUser -> new ResponseEntity<>(updatedUser, HttpStatus.OK))
                 .defaultIfEmpty(new ResponseEntity<>(HttpStatus.BAD_REQUEST));
     }
 

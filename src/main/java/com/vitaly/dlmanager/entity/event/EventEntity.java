@@ -3,9 +3,9 @@ package com.vitaly.dlmanager.entity.event;
 // gh crazym8nd
 
 
+import com.vitaly.dlmanager.entity.Status;
 import com.vitaly.dlmanager.entity.file.FileEntity;
 import com.vitaly.dlmanager.entity.user.UserEntity;
-import com.vitaly.dlmanager.entity.Status;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
