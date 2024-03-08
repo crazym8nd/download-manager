@@ -3,7 +3,6 @@ package com.vitaly.dlmanager.security;
 // gh crazym8nd
 
 
-import com.vitaly.dlmanager.exception.AuthException;
 import com.vitaly.dlmanager.exception.UnauthorizedException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -21,19 +20,19 @@ public class JwtHandler {
         this.secret = secret;
     }
 
-    public Mono<VerificationResult> verify(String accessToken){
-        return  Mono.just(verificationResult(accessToken))
+    public Mono<VerificationResult> verify(String accessToken) {
+        return Mono.just(verificationResult(accessToken))
                 .onErrorResume(e -> Mono.error(new UnauthorizedException(e.getMessage())));
     }
 
-    private VerificationResult verificationResult(String token){
+    private VerificationResult verificationResult(String token) {
         Claims claims = getClaimsFromToken(token);
         final Date expiration = claims.getExpiration();
 
-        if(expiration.before(new Date())){
+        if (expiration.before(new Date())) {
             throw new RuntimeException("Token expired");
         }
-        return new VerificationResult(claims,token);
+        return new VerificationResult(claims, token);
     }
 
     private Claims getClaimsFromToken(String token) {
@@ -44,7 +43,7 @@ public class JwtHandler {
                 .getPayload();
     }
 
-    public static class VerificationResult{
+    public static class VerificationResult {
         public Claims claims;
         public String token;
 

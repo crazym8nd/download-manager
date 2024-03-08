@@ -6,6 +6,7 @@ package com.vitaly.dlmanager.security;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
 import java.security.Principal;
 
 @Data

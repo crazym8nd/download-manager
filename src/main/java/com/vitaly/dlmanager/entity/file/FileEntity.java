@@ -4,13 +4,13 @@ package com.vitaly.dlmanager.entity.file;
 
 
 import com.vitaly.dlmanager.entity.Status;
-import com.vitaly.dlmanager.entity.user.UserEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;
+
 import java.time.LocalDateTime;
 
 @Data

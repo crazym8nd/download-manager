@@ -3,7 +3,7 @@ package com.vitaly.dlmanager.exception;
 // gh crazym8nd
 
 
-public class AuthException extends ApiException{
+public class AuthException extends ApiException {
     public AuthException(String message, String errorCode) {
         super(message, errorCode);
     }

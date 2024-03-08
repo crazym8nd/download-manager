@@ -6,5 +6,5 @@ package com.vitaly.dlmanager.service;
 import com.vitaly.dlmanager.entity.event.EventEntity;
 
 
-public interface EventService extends GenericService<EventEntity,Long> {
+public interface EventService extends GenericService<EventEntity, Long> {
 }

@@ -63,28 +63,17 @@ paths:
       responses:
         "200":
           description: OK
-  /api/v1/files/:
-    get:
-      tags:
-        - file-controller-v-1
-      operationId: listOfFiles
-      responses:
-        "200":
-          description: OK
-          content:
-            '*/*':
-              schema:
-                $ref: '#/components/schemas/ResponseEntityString'
+  /api/v1/files/{fileName}:
     put:
       tags:
         - file-controller-v-1
-      operationId: download
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/FileDto'
-        required: true
+      operationId: downloadFile
+      parameters:
+        - name: fileName
+          in: path
+          required: true
+          schema:
+            type: string
       responses:
         "200":
           description: OK
@@ -93,16 +82,16 @@ paths:
               schema:
                 type: string
                 format: binary
-    post:
+    delete:
       tags:
         - file-controller-v-1
-      operationId: upload
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/FileDto'
-        required: true
+      operationId: delete_1
+      parameters:
+        - name: fileName
+          in: path
+          required: true
+          schema:
+            type: string
       responses:
         "200":
           description: OK
@@ -167,7 +156,11 @@ paths:
       responses:
         "200":
           description: OK
-  /api/v1/users/:
+          content:
+            '*/*':
+              schema:
+                type: object
+  /api/v1/users:
     get:
       tags:
         - user-controller-v-1
@@ -178,7 +171,9 @@ paths:
           content:
             '*/*':
               schema:
-                $ref: '#/components/schemas/ResponseEntityUserDto'
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserDto'
     post:
       tags:
         - user-controller-v-1
@@ -196,7 +191,43 @@ paths:
             '*/*':
               schema:
                 $ref: '#/components/schemas/UserEntity'
-  /api/v1/events/:
+  /api/v1/files:
+    get:
+      tags:
+        - file-controller-v-1
+      operationId: listOfFiles
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  type: string
+    post:
+      tags:
+        - file-controller-v-1
+      operationId: uploadFile
+      requestBody:
+        content:
+          application/json:
+            schema:
+              required:
+                - file
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: string
+  /api/v1/events:
     get:
       tags:
         - event-controller-v-1
@@ -207,7 +238,9 @@ paths:
           content:
             '*/*':
               schema:
-                $ref: '#/components/schemas/ResponseEntityEventDto'
+                type: array
+                items:
+                  $ref: '#/components/schemas/EventDto'
     post:
       tags:
         - event-controller-v-1
@@ -286,24 +319,6 @@ paths:
             '*/*':
               schema:
                 $ref: '#/components/schemas/UserDto'
-  /api/v1/files/{fileName}:
-    delete:
-      tags:
-        - file-controller-v-1
-      operationId: delete_1
-      parameters:
-        - name: fileName
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        "200":
-          description: OK
-          content:
-            '*/*':
-              schema:
-                type: string
 components:
   schemas:
     UserEntity:
@@ -328,27 +343,6 @@ components:
           type: string
           format: date-time
         updatedAt:
-          type: string
-          format: date-time
-        status:
-          type: string
-          enum:
-            - ACTIVE
-            - DELETED
-    FileDto:
-      type: object
-      properties:
-        id:
-          type: integer
-          format: int64
-        file_name:
-          type: string
-        location:
-          type: string
-        created_at:
-          type: string
-          format: date-time
-        updated_at:
           type: string
           format: date-time
         status:
@@ -449,614 +443,6 @@ components:
         expires_at:
           type: string
           format: date-time
-    ContentDisposition:
-      type: object
-      properties:
-        type:
-          type: string
-        name:
-          type: string
-        filename:
-          type: string
-        charset:
-          type: string
-        size:
-          type: integer
-          format: int64
-          deprecated: true
-        creationDate:
-          type: string
-          format: date-time
-          deprecated: true
-        modificationDate:
-          type: string
-          format: date-time
-          deprecated: true
-        readDate:
-          type: string
-          format: date-time
-          deprecated: true
-        attachment:
-          type: boolean
-        formData:
-          type: boolean
-        inline:
-          type: boolean
-    HttpMethod:
-      type: object
-    HttpRange:
-      type: object
-    HttpStatusCode:
-      type: object
-      properties:
-        error:
-          type: boolean
-        is5xxServerError:
-          type: boolean
-        is4xxClientError:
-          type: boolean
-        is1xxInformational:
-          type: boolean
-        is2xxSuccessful:
-          type: boolean
-        is3xxRedirection:
-          type: boolean
-    MediaType:
-      type: object
-      properties:
-        type:
-          type: string
-        subtype:
-          type: string
-        parameters:
-          type: object
-          additionalProperties:
-            type: string
-        qualityValue:
-          type: number
-          format: double
-        charset:
-          type: string
-        wildcardSubtype:
-          type: boolean
-        wildcardType:
-          type: boolean
-        subtypeSuffix:
-          type: string
-        concrete:
-          type: boolean
-    ResponseEntityUserDto:
-      type: object
-      properties:
-        headers:
-          type: object
-          properties:
-            empty:
-              type: boolean
-            location:
-              type: string
-              format: uri
-            host:
-              type: object
-              properties:
-                address:
-                  type: object
-                  properties:
-                    hostAddress:
-                      type: string
-                    address:
-                      type: array
-                      items:
-                        type: string
-                        format: byte
-                    hostName:
-                      type: string
-                    linkLocalAddress:
-                      type: boolean
-                    multicastAddress:
-                      type: boolean
-                    anyLocalAddress:
-                      type: boolean
-                    loopbackAddress:
-                      type: boolean
-                    siteLocalAddress:
-                      type: boolean
-                    mcglobal:
-                      type: boolean
-                    mcnodeLocal:
-                      type: boolean
-                    mclinkLocal:
-                      type: boolean
-                    mcsiteLocal:
-                      type: boolean
-                    mcorgLocal:
-                      type: boolean
-                    canonicalHostName:
-                      type: string
-                port:
-                  type: integer
-                  format: int32
-                unresolved:
-                  type: boolean
-                hostName:
-                  type: string
-                hostString:
-                  type: string
-            all:
-              type: object
-              additionalProperties:
-                type: string
-              writeOnly: true
-            lastModified:
-              type: integer
-              format: int64
-            date:
-              type: integer
-              format: int64
-            contentLength:
-              type: integer
-              format: int64
-            connection:
-              type: array
-              items:
-                type: string
-            ifModifiedSince:
-              type: integer
-              format: int64
-            contentType:
-              $ref: '#/components/schemas/MediaType'
-            range:
-              type: array
-              items:
-                $ref: '#/components/schemas/HttpRange'
-            contentDisposition:
-              $ref: '#/components/schemas/ContentDisposition'
-            acceptCharset:
-              type: array
-              items:
-                type: string
-            origin:
-              type: string
-            allow:
-              uniqueItems: true
-              type: array
-              items:
-                $ref: '#/components/schemas/HttpMethod'
-            etag:
-              type: string
-            cacheControl:
-              type: string
-            accessControlAllowOrigin:
-              type: string
-            accessControlAllowCredentials:
-              type: boolean
-            acceptLanguageAsLocales:
-              type: array
-              items:
-                type: object
-                properties:
-                  language:
-                    type: string
-                  displayName:
-                    type: string
-                  country:
-                    type: string
-                  variant:
-                    type: string
-                  script:
-                    type: string
-                  unicodeLocaleAttributes:
-                    uniqueItems: true
-                    type: array
-                    items:
-                      type: string
-                  unicodeLocaleKeys:
-                    uniqueItems: true
-                    type: array
-                    items:
-                      type: string
-                  displayLanguage:
-                    type: string
-                  displayScript:
-                    type: string
-                  displayCountry:
-                    type: string
-                  displayVariant:
-                    type: string
-                  extensionKeys:
-                    uniqueItems: true
-                    type: array
-                    items:
-                      type: string
-                  iso3Language:
-                    type: string
-                  iso3Country:
-                    type: string
-            accessControlAllowHeaders:
-              type: array
-              items:
-                type: string
-            accessControlExposeHeaders:
-              type: array
-              items:
-                type: string
-            accessControlMaxAge:
-              type: integer
-              format: int64
-            accessControlRequestHeaders:
-              type: array
-              items:
-                type: string
-            ifUnmodifiedSince:
-              type: integer
-              format: int64
-            accessControlAllowMethods:
-              type: array
-              items:
-                $ref: '#/components/schemas/HttpMethod'
-            accessControlRequestMethod:
-              $ref: '#/components/schemas/HttpMethod'
-            expires:
-              type: integer
-              format: int64
-            contentLanguage:
-              type: object
-              properties:
-                language:
-                  type: string
-                displayName:
-                  type: string
-                country:
-                  type: string
-                variant:
-                  type: string
-                script:
-                  type: string
-                unicodeLocaleAttributes:
-                  uniqueItems: true
-                  type: array
-                  items:
-                    type: string
-                unicodeLocaleKeys:
-                  uniqueItems: true
-                  type: array
-                  items:
-                    type: string
-                displayLanguage:
-                  type: string
-                displayScript:
-                  type: string
-                displayCountry:
-                  type: string
-                displayVariant:
-                  type: string
-                extensionKeys:
-                  uniqueItems: true
-                  type: array
-                  items:
-                    type: string
-                iso3Language:
-                  type: string
-                iso3Country:
-                  type: string
-            acceptLanguage:
-              type: array
-              items:
-                type: object
-                properties:
-                  range:
-                    type: string
-                  weight:
-                    type: number
-                    format: double
-            basicAuth:
-              type: string
-              writeOnly: true
-            accept:
-              type: array
-              items:
-                $ref: '#/components/schemas/MediaType'
-            acceptPatch:
-              type: array
-              items:
-                $ref: '#/components/schemas/MediaType'
-            ifNoneMatch:
-              type: array
-              items:
-                type: string
-            vary:
-              type: array
-              items:
-                type: string
-            pragma:
-              type: string
-            ifMatch:
-              type: array
-              items:
-                type: string
-            upgrade:
-              type: string
-            bearerAuth:
-              type: string
-              writeOnly: true
-          additionalProperties:
-            type: array
-            items:
-              type: string
-        body:
-          $ref: '#/components/schemas/UserDto'
-        statusCode:
-          $ref: '#/components/schemas/HttpStatusCode'
-        statusCodeValue:
-          type: integer
-          format: int32
-          deprecated: true
-    ResponseEntityString:
-      type: object
-      properties:
-        headers:
-          type: object
-          properties:
-            empty:
-              type: boolean
-            location:
-              type: string
-              format: uri
-            host:
-              type: object
-              properties:
-                address:
-                  type: object
-                  properties:
-                    hostAddress:
-                      type: string
-                    address:
-                      type: array
-                      items:
-                        type: string
-                        format: byte
-                    hostName:
-                      type: string
-                    linkLocalAddress:
-                      type: boolean
-                    multicastAddress:
-                      type: boolean
-                    anyLocalAddress:
-                      type: boolean
-                    loopbackAddress:
-                      type: boolean
-                    siteLocalAddress:
-                      type: boolean
-                    mcglobal:
-                      type: boolean
-                    mcnodeLocal:
-                      type: boolean
-                    mclinkLocal:
-                      type: boolean
-                    mcsiteLocal:
-                      type: boolean
-                    mcorgLocal:
-                      type: boolean
-                    canonicalHostName:
-                      type: string
-                port:
-                  type: integer
-                  format: int32
-                unresolved:
-                  type: boolean
-                hostName:
-                  type: string
-                hostString:
-                  type: string
-            all:
-              type: object
-              additionalProperties:
-                type: string
-              writeOnly: true
-            lastModified:
-              type: integer
-              format: int64
-            date:
-              type: integer
-              format: int64
-            contentLength:
-              type: integer
-              format: int64
-            connection:
-              type: array
-              items:
-                type: string
-            ifModifiedSince:
-              type: integer
-              format: int64
-            contentType:
-              $ref: '#/components/schemas/MediaType'
-            range:
-              type: array
-              items:
-                $ref: '#/components/schemas/HttpRange'
-            contentDisposition:
-              $ref: '#/components/schemas/ContentDisposition'
-            acceptCharset:
-              type: array
-              items:
-                type: string
-            origin:
-              type: string
-            allow:
-              uniqueItems: true
-              type: array
-              items:
-                $ref: '#/components/schemas/HttpMethod'
-            etag:
-              type: string
-            cacheControl:
-              type: string
-            accessControlAllowOrigin:
-              type: string
-            accessControlAllowCredentials:
-              type: boolean
-            acceptLanguageAsLocales:
-              type: array
-              items:
-                type: object
-                properties:
-                  language:
-                    type: string
-                  displayName:
-                    type: string
-                  country:
-                    type: string
-                  variant:
-                    type: string
-                  script:
-                    type: string
-                  unicodeLocaleAttributes:
-                    uniqueItems: true
-                    type: array
-                    items:
-                      type: string
-                  unicodeLocaleKeys:
-                    uniqueItems: true
-                    type: array
-                    items:
-                      type: string
-                  displayLanguage:
-                    type: string
-                  displayScript:
-                    type: string
-                  displayCountry:
-                    type: string
-                  displayVariant:
-                    type: string
-                  extensionKeys:
-                    uniqueItems: true
-                    type: array
-                    items:
-                      type: string
-                  iso3Language:
-                    type: string
-                  iso3Country:
-                    type: string
-            accessControlAllowHeaders:
-              type: array
-              items:
-                type: string
-            accessControlExposeHeaders:
-              type: array
-              items:
-                type: string
-            accessControlMaxAge:
-              type: integer
-              format: int64
-            accessControlRequestHeaders:
-              type: array
-              items:
-                type: string
-            ifUnmodifiedSince:
-              type: integer
-              format: int64
-            accessControlAllowMethods:
-              type: array
-              items:
-                $ref: '#/components/schemas/HttpMethod'
-            accessControlRequestMethod:
-              $ref: '#/components/schemas/HttpMethod'
-            expires:
-              type: integer
-              format: int64
-            contentLanguage:
-              type: object
-              properties:
-                language:
-                  type: string
-                displayName:
-                  type: string
-                country:
-                  type: string
-                variant:
-                  type: string
-                script:
-                  type: string
-                unicodeLocaleAttributes:
-                  uniqueItems: true
-                  type: array
-                  items:
-                    type: string
-                unicodeLocaleKeys:
-                  uniqueItems: true
-                  type: array
-                  items:
-                    type: string
-                displayLanguage:
-                  type: string
-                displayScript:
-                  type: string
-                displayCountry:
-                  type: string
-                displayVariant:
-                  type: string
-                extensionKeys:
-                  uniqueItems: true
-                  type: array
-                  items:
-                    type: string
-                iso3Language:
-                  type: string
-                iso3Country:
-                  type: string
-            acceptLanguage:
-              type: array
-              items:
-                type: object
-                properties:
-                  range:
-                    type: string
-                  weight:
-                    type: number
-                    format: double
-            basicAuth:
-              type: string
-              writeOnly: true
-            accept:
-              type: array
-              items:
-                $ref: '#/components/schemas/MediaType'
-            acceptPatch:
-              type: array
-              items:
-                $ref: '#/components/schemas/MediaType'
-            ifNoneMatch:
-              type: array
-              items:
-                type: string
-            vary:
-              type: array
-              items:
-                type: string
-            pragma:
-              type: string
-            ifMatch:
-              type: array
-              items:
-                type: string
-            upgrade:
-              type: string
-            bearerAuth:
-              type: string
-              writeOnly: true
-          additionalProperties:
-            type: array
-            items:
-              type: string
-        body:
-          type: string
-        statusCode:
-          $ref: '#/components/schemas/HttpStatusCode'
-        statusCodeValue:
-          type: integer
-          format: int32
-          deprecated: true
     EventDto:
       type: object
       properties:
@@ -1078,269 +464,3 @@ components:
           enum:
             - ACTIVE
             - DELETED
-    ResponseEntityEventDto:
-      type: object
-      properties:
-        headers:
-          type: object
-          properties:
-            empty:
-              type: boolean
-            location:
-              type: string
-              format: uri
-            host:
-              type: object
-              properties:
-                address:
-                  type: object
-                  properties:
-                    hostAddress:
-                      type: string
-                    address:
-                      type: array
-                      items:
-                        type: string
-                        format: byte
-                    hostName:
-                      type: string
-                    linkLocalAddress:
-                      type: boolean
-                    multicastAddress:
-                      type: boolean
-                    anyLocalAddress:
-                      type: boolean
-                    loopbackAddress:
-                      type: boolean
-                    siteLocalAddress:
-                      type: boolean
-                    mcglobal:
-                      type: boolean
-                    mcnodeLocal:
-                      type: boolean
-                    mclinkLocal:
-                      type: boolean
-                    mcsiteLocal:
-                      type: boolean
-                    mcorgLocal:
-                      type: boolean
-                    canonicalHostName:
-                      type: string
-                port:
-                  type: integer
-                  format: int32
-                unresolved:
-                  type: boolean
-                hostName:
-                  type: string
-                hostString:
-                  type: string
-            all:
-              type: object
-              additionalProperties:
-                type: string
-              writeOnly: true
-            lastModified:
-              type: integer
-              format: int64
-            date:
-              type: integer
-              format: int64
-            contentLength:
-              type: integer
-              format: int64
-            connection:
-              type: array
-              items:
-                type: string
-            ifModifiedSince:
-              type: integer
-              format: int64
-            contentType:
-              $ref: '#/components/schemas/MediaType'
-            range:
-              type: array
-              items:
-                $ref: '#/components/schemas/HttpRange'
-            contentDisposition:
-              $ref: '#/components/schemas/ContentDisposition'
-            acceptCharset:
-              type: array
-              items:
-                type: string
-            origin:
-              type: string
-            allow:
-              uniqueItems: true
-              type: array
-              items:
-                $ref: '#/components/schemas/HttpMethod'
-            etag:
-              type: string
-            cacheControl:
-              type: string
-            accessControlAllowOrigin:
-              type: string
-            accessControlAllowCredentials:
-              type: boolean
-            acceptLanguageAsLocales:
-              type: array
-              items:
-                type: object
-                properties:
-                  language:
-                    type: string
-                  displayName:
-                    type: string
-                  country:
-                    type: string
-                  variant:
-                    type: string
-                  script:
-                    type: string
-                  unicodeLocaleAttributes:
-                    uniqueItems: true
-                    type: array
-                    items:
-                      type: string
-                  unicodeLocaleKeys:
-                    uniqueItems: true
-                    type: array
-                    items:
-                      type: string
-                  displayLanguage:
-                    type: string
-                  displayScript:
-                    type: string
-                  displayCountry:
-                    type: string
-                  displayVariant:
-                    type: string
-                  extensionKeys:
-                    uniqueItems: true
-                    type: array
-                    items:
-                      type: string
-                  iso3Language:
-                    type: string
-                  iso3Country:
-                    type: string
-            accessControlAllowHeaders:
-              type: array
-              items:
-                type: string
-            accessControlExposeHeaders:
-              type: array
-              items:
-                type: string
-            accessControlMaxAge:
-              type: integer
-              format: int64
-            accessControlRequestHeaders:
-              type: array
-              items:
-                type: string
-            ifUnmodifiedSince:
-              type: integer
-              format: int64
-            accessControlAllowMethods:
-              type: array
-              items:
-                $ref: '#/components/schemas/HttpMethod'
-            accessControlRequestMethod:
-              $ref: '#/components/schemas/HttpMethod'
-            expires:
-              type: integer
-              format: int64
-            contentLanguage:
-              type: object
-              properties:
-                language:
-                  type: string
-                displayName:
-                  type: string
-                country:
-                  type: string
-                variant:
-                  type: string
-                script:
-                  type: string
-                unicodeLocaleAttributes:
-                  uniqueItems: true
-                  type: array
-                  items:
-                    type: string
-                unicodeLocaleKeys:
-                  uniqueItems: true
-                  type: array
-                  items:
-                    type: string
-                displayLanguage:
-                  type: string
-                displayScript:
-                  type: string
-                displayCountry:
-                  type: string
-                displayVariant:
-                  type: string
-                extensionKeys:
-                  uniqueItems: true
-                  type: array
-                  items:
-                    type: string
-                iso3Language:
-                  type: string
-                iso3Country:
-                  type: string
-            acceptLanguage:
-              type: array
-              items:
-                type: object
-                properties:
-                  range:
-                    type: string
-                  weight:
-                    type: number
-                    format: double
-            basicAuth:
-              type: string
-              writeOnly: true
-            accept:
-              type: array
-              items:
-                $ref: '#/components/schemas/MediaType'
-            acceptPatch:
-              type: array
-              items:
-                $ref: '#/components/schemas/MediaType'
-            ifNoneMatch:
-              type: array
-              items:
-                type: string
-            vary:
-              type: array
-              items:
-                type: string
-            pragma:
-              type: string
-            ifMatch:
-              type: array
-              items:
-                type: string
-            upgrade:
-              type: string
-            bearerAuth:
-              type: string
-              writeOnly: true
-          additionalProperties:
-            type: array
-            items:
-              type: string
-        body:
-          $ref: '#/components/schemas/EventDto'
-        statusCode:
-          $ref: '#/components/schemas/HttpStatusCode'
-        statusCodeValue:
-          type: integer
-          format: int32
-          deprecated: true

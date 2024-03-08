@@ -2,15 +2,13 @@ package com.vitaly.dlmanager.service.impl;
 //  17-Feb-24
 // gh crazym8nd
 
+import com.vitaly.dlmanager.entity.Status;
 import com.vitaly.dlmanager.entity.user.UserEntity;
 import com.vitaly.dlmanager.entity.user.UserRole;
-import com.vitaly.dlmanager.entity.Status;
 import com.vitaly.dlmanager.repository.UserRepository;
 import com.vitaly.dlmanager.service.UserService;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,24 +16,24 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Slf4j
 @Service
 public class UserServiceImpl implements UserService {
     private UserRepository userRepository;
-    private  PasswordEncoder passwordEncoder;
+    private PasswordEncoder passwordEncoder;
 
     @Autowired
     public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
     }
+
     public UserServiceImpl(UserRepository userRepository) {
 
     }
 
-    public Mono<UserEntity> getUserByUsername(String username){
+    public Mono<UserEntity> getUserByUsername(String username) {
         return userRepository.findByUsername(username);
     }
 
@@ -53,7 +51,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public Mono<UserEntity> update(UserEntity userEntity) {
         return this.userRepository.findById(userEntity.getId())
-                .flatMap((u ->{
+                .flatMap((u -> {
                     u.setStatus(userEntity.getStatus());
                     return this.userRepository.save(userEntity);
                 }));

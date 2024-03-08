@@ -1,59 +1,58 @@
 plugins {
-	id 'java'
-	id 'org.springframework.boot' version '3.2.2'
-	id 'io.spring.dependency-management' version '1.1.4'
+    id 'java'
+    id 'org.springframework.boot' version '3.2.2'
+    id 'io.spring.dependency-management' version '1.1.4'
 }
 
 group = 'com.vitaly'
 version = '0.0.1-SNAPSHOT'
 
 java {
-	sourceCompatibility = '17'
+    sourceCompatibility = '17'
 }
 
 repositories {
-	mavenCentral()
+    mavenCentral()
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-webflux'
-	implementation 'org.springframework.boot:spring-boot-starter-security'
-	implementation 'org.springframework.session:spring-session-core'
-	implementation 'org.springframework.boot:spring-boot-starter-data-r2dbc'
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.session:spring-session-core'
+    implementation 'org.springframework.boot:spring-boot-starter-data-r2dbc'
 
 
-	implementation "io.asyncer:r2dbc-mysql:$r2dbcMysqlVersion"
-	implementation "com.mysql:mysql-connector-j:$mysqlConnectorVersion"
+    implementation "io.asyncer:r2dbc-mysql:$r2dbcMysqlVersion"
+    implementation "com.mysql:mysql-connector-j:$mysqlConnectorVersion"
 
-	implementation "org.liquibase:liquibase-core:$luquibaseVersion"
+    implementation "org.liquibase:liquibase-core:$luquibaseVersion"
 
-	implementation "com.github.spotbugs:spotbugs:$spotbugsVersion"
+    implementation "com.github.spotbugs:spotbugs:$spotbugsVersion"
 
-	implementation "org.projectlombok:lombok:$lombokVersion"
+    implementation "org.projectlombok:lombok:$lombokVersion"
 
-	implementation "io.jsonwebtoken:jjwt-api:$jjwtVersion"
-	runtimeOnly "io.jsonwebtoken:jjwt-impl:$jjwtVersion"
-	runtimeOnly "io.jsonwebtoken:jjwt-jackson:$jjwtVersion"
+    implementation "io.jsonwebtoken:jjwt-api:$jjwtVersion"
+    runtimeOnly "io.jsonwebtoken:jjwt-impl:$jjwtVersion"
+    runtimeOnly "io.jsonwebtoken:jjwt-jackson:$jjwtVersion"
 
-	implementation "jakarta.xml.bind:jakarta.xml.bind-api:$jakartabapiVersion"
-	implementation "org.projectlombok:lombok:$lombokVersion"
+    implementation "jakarta.xml.bind:jakarta.xml.bind-api:$jakartabapiVersion"
+    implementation "org.projectlombok:lombok:$lombokVersion"
 
-	annotationProcessor "org.projectlombok:lombok:$lombokVersion"
-	compileOnly "org.projectlombok:lombok:$lombokVersion"
+    annotationProcessor "org.projectlombok:lombok:$lombokVersion"
+    compileOnly "org.projectlombok:lombok:$lombokVersion"
 
-	implementation "org.mapstruct:mapstruct:$mapstructVersion"
-	annotationProcessor "org.mapstruct:mapstruct-processor:$mapstructVersion"
+    implementation "org.mapstruct:mapstruct:$mapstructVersion"
+    annotationProcessor "org.mapstruct:mapstruct-processor:$mapstructVersion"
 
-	implementation "com.amazonaws:aws-java-sdk:$awsSdkVersion"
-	implementation "org.springdoc:springdoc-openapi-starter-webflux-ui:$springdocOpenAPIVersion"
+    implementation "com.amazonaws:aws-java-sdk:$awsSdkVersion"
+    implementation "org.springdoc:springdoc-openapi-starter-webflux-ui:$springdocOpenAPIVersion"
 
 
-
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testImplementation 'io.projectreactor:reactor-test'
-	testImplementation 'org.springframework.security:spring-security-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'io.projectreactor:reactor-test'
+    testImplementation 'org.springframework.security:spring-security-test'
 }
 
 tasks.named('test') {
-	useJUnitPlatform()
+    useJUnitPlatform()
 }

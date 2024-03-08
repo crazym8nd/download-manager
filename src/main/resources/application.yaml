@@ -15,10 +15,10 @@ spring:
 
 jwt:
   password:
-      encoder:
-        secret: 3ef45f2e73ffecccffbebafe18ddb3e323b66b4ecbfcfa8ef8a8f994f606f659
-        iteration: 64
-        keyLength: 256
+    encoder:
+      secret: 3ef45f2e73ffecccffbebafe18ddb3e323b66b4ecbfcfa8ef8a8f994f606f659
+      iteration: 64
+      keyLength: 256
   secret: 619a6f12e315d17239d4414f9fe1abf6f1a890713086b34d470446d139a25b74
   expiration: 3600
   issuer: dl_manager
