@@ -299,7 +299,7 @@ paths:
       tags:
         - user-controller-v-1
       operationId: getUserByName
-      parameters: []
+      parameters: [ ]
       responses:
         "200":
           description: OK
