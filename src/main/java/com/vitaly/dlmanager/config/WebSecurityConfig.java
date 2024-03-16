@@ -54,6 +54,8 @@ public class WebSecurityConfig {
                 .and()
                 .addFilterAt(bearerAuthenticationFilter(authenticationManager), SecurityWebFiltersOrder.AUTHENTICATION)
                 .build();
+
+        //TODO по ролям
     }
 
     private AuthenticationWebFilter bearerAuthenticationFilter(AuthenticationManager authenticationManager) {

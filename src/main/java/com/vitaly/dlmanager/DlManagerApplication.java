@@ -9,11 +9,11 @@ import java.util.TimeZone;
 public class DlManagerApplication {
 
     public static void main(String[] args) {
-
-        TimeZone.setDefault(TimeZone.getTimeZone("Europe/Moscow"));
         SpringApplication.run(DlManagerApplication.class, args);
     }
     //TODO сделать доступ в зависимости от роли
-    //TODO сделать тесты
+    //TODO сделать тесты интеграционный с реальными хождениями в бд через тест контейнеры
     //TODO упаковать в докер
+    //TODO логика по ролям в зависимости от роли на уровне сервисе функции
+    //TODO webflux s3
 }

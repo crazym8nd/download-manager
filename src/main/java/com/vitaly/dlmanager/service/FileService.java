@@ -3,16 +3,22 @@ package com.vitaly.dlmanager.service;
 // gh crazym8nd
 
 
-import org.springframework.web.multipart.MultipartFile;
+import com.vitaly.dlmanager.dto.AWSS3Object;
+import com.vitaly.dlmanager.dto.FileResponse;
+import com.vitaly.dlmanager.entity.file.FileEntity;
+import jakarta.validation.constraints.NotNull;
+import org.springframework.http.codec.multipart.FilePart;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 public interface FileService {
-    Mono<String> uploadFile(MultipartFile file);
+    Mono<FileResponse> uploadObject(FilePart filePart);
 
-    Mono<byte[]> downloadFile(String fileName);
+    Mono<byte[]> getByteObject(@NotNull String key);
 
-    Flux<String> listFiles();
+    Flux<AWSS3Object> getObjects();
 
-    Mono<Void> delete(String fileName);
+    Mono<Void> deleteObject(@NotNull String objectKey);
+
+    Mono<FileEntity> getById(Long id);
 }
