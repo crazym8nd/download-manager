@@ -48,9 +48,6 @@ public class FileServiceImpl implements FileService {
                 .map(s3Object -> new AWSS3Object(s3Object.key(), s3Object.lastModified(),s3Object.eTag(), s3Object.size()));
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Mono<Void> deleteObject(@NotNull String objectKey) {
         log.info("Delete Object with key: {}", objectKey);
@@ -61,13 +58,30 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
+    public Flux<FileEntity> getAll() {
+        return null;
+    }
+
+    @Override
     public Mono<FileEntity> getById(Long id) {
         return fileRepository.findById(id);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
+    public Mono<FileEntity> update(FileEntity fileEntity) {
+        return null;
+    }
+
+    @Override
+    public Mono<FileEntity> save(FileEntity fileEntity) {
+        return null;
+    }
+
+    @Override
+    public Mono<FileEntity> delete(Long aLong) {
+        return null;
+    }
+
     @Override
     public Mono<byte[]> getByteObject(@NotNull String key) {
         log.debug("Fetching object as byte array from S3 bucket: {}, key: {}", s3ConfigProperties.getS3BucketName(), key);
@@ -77,9 +91,7 @@ public class FileServiceImpl implements FileService {
                 .map(BytesWrapper::asByteArray);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+
     @Override
     public Mono<FileResponse> uploadObject(FilePart filePart) {
 
@@ -135,9 +147,6 @@ public class FileServiceImpl implements FileService {
                 });
     }
 
-    /**
-     * Uploads a part in a multipart upload.
-     */
     private Mono<CompletedPart> uploadPartObject(UploadStatus uploadStatus, ByteBuffer buffer) {
         final int partNumber = uploadStatus.getAddedPartCounter();
         log.info("UploadPart - partNumber={}, contentLength={}", partNumber, buffer.capacity());
@@ -163,10 +172,7 @@ public class FileServiceImpl implements FileService {
                 });
     }
 
-    /**
-     * This method is called when a part finishes uploading. It's primary function is to verify the ETag of the part
-     * we just uploaded.
-     */
+
     private Mono<CompleteMultipartUploadResponse> completeMultipartUpload(UploadStatus uploadStatus) {
         log.info("CompleteUpload - fileKey={}, completedParts.size={}",
                 uploadStatus.getFileKey(), uploadStatus.getCompletedParts().size());

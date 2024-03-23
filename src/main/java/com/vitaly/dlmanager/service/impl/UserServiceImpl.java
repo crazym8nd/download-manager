@@ -29,9 +29,19 @@ public class UserServiceImpl implements UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public UserServiceImpl(UserRepository userRepository) {
-
+    @Override
+    public Mono<UserEntity> registerUser(UserEntity user) {
+        return userRepository.save(
+                user.toBuilder()
+                        .password(passwordEncoder.encode(user.getPassword()))
+                        .role(UserRole.USER)
+                        .status(Status.ACTIVE)
+                        .createdAt(LocalDateTime.now())
+                        .updatedAt(LocalDateTime.now())
+                        .build()
+        ).doOnSuccess(u -> log.info("IN registerUserUser - user {} created", u));
     }
+
 
     public Mono<UserEntity> getUserByUsername(String username) {
         return userRepository.findByUsername(username);
@@ -52,7 +62,7 @@ public class UserServiceImpl implements UserService {
     public Mono<UserEntity> update(UserEntity userEntity) {
         return this.userRepository.findById(userEntity.getId())
                 .flatMap((u -> {
-                    u.setStatus(userEntity.getStatus());
+                    u.setUpdatedAt(LocalDateTime.now());
                     return this.userRepository.save(userEntity);
                 }));
     }

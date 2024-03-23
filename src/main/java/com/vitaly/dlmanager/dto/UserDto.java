@@ -9,8 +9,10 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.vitaly.dlmanager.entity.Status;
 import com.vitaly.dlmanager.entity.user.UserRole;
 import lombok.Data;
+import org.springframework.data.annotation.Transient;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 
 @Data
@@ -25,4 +27,7 @@ public class UserDto {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private Status status;
+
+    @Transient
+    private List<EventDto> events;
 }

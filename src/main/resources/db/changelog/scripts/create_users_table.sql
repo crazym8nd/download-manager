@@ -22,8 +22,8 @@ create table if not exists users
 (
     256
 ) not null,
-    created_at timestamp default CURRENT_TIMESTAMP not null,
-    updated_at timestamp default CURRENT_TIMESTAMP not null,
+    created_at timestamp default CURRENT_TIMESTAMP,
+    updated_at timestamp default CURRENT_TIMESTAMP,
     status varchar
 (
     25

@@ -24,7 +24,7 @@ public class FileControllerV1 {
     private final FileService fileService;
     private final FileMapper fileMapper;
 
-    @PostMapping("/upload")
+    @PostMapping()
     public Mono<SuccessResponse> upload(@RequestPart("file-data") Mono<FilePart> filePart) {
         return filePart
                 .map(file -> {

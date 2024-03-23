@@ -27,9 +27,8 @@ public class AuthRestControllerV1 {
     @PostMapping("/register")
     public Mono<UserDto> register(@RequestBody UserDto dto) {
         UserEntity entity = userMapper.map(dto);
-        userServiceImpl.save(entity);
-        UserDto dtoAFter = userMapper.map(entity);
-        return Mono.just(dtoAFter);
+        return userServiceImpl.save(entity)
+                .map(userMapper::map);
     }
 
     @PostMapping("/login")
