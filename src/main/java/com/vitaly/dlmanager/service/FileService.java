@@ -11,8 +11,8 @@ import org.springframework.http.codec.multipart.FilePart;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-public interface FileService extends GenericService<FileEntity, Long> {
-    Mono<FileResponse> uploadObject(FilePart filePart);
+public interface FileService {
+    Mono<FileResponse> uploadObject(FilePart filePart, Long userId);
 
     Mono<byte[]> getByteObject(@NotNull String key);
 

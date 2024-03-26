@@ -4,10 +4,13 @@ package com.vitaly.dlmanager.rest;
 
 import com.vitaly.dlmanager.dto.SuccessResponse;
 import com.vitaly.dlmanager.mapper.FileMapper;
+import com.vitaly.dlmanager.security.CustomPrincipal;
+import com.vitaly.dlmanager.security.SecurityService;
 import com.vitaly.dlmanager.service.FileService;
 import com.vitaly.dlmanager.utils.FileUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.codec.multipart.FilePart;
+import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
@@ -22,16 +25,19 @@ import java.text.MessageFormat;
 public class FileControllerV1 {
 
     private final FileService fileService;
+    private final SecurityService securityService;
     private final FileMapper fileMapper;
 
     @PostMapping()
-    public Mono<SuccessResponse> upload(@RequestPart("file-data") Mono<FilePart> filePart) {
+    public Mono<SuccessResponse> upload(@RequestPart("form-data") Mono<FilePart> filePart
+            , Authentication authentication) {
+        CustomPrincipal customPrincipal = (CustomPrincipal) authentication.getPrincipal();
+        Long userId = customPrincipal.getId();
         return filePart
-                .map(file -> {
+                .flatMap(file -> {
                     FileUtils.filePartValidator(file);
-                    return file;
+                    return fileService.uploadObject(file, userId);
                 })
-                .flatMap(fileService::uploadObject)
                 .map(fileResponse -> new SuccessResponse(fileResponse, "Upload successfully"));
     }
 

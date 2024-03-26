@@ -3,7 +3,6 @@ package com.vitaly.dlmanager.service.impl;
 // gh crazym8nd
 
 
-import com.vitaly.dlmanager.entity.Status;
 import com.vitaly.dlmanager.entity.event.EventEntity;
 import com.vitaly.dlmanager.repository.EventRepository;
 import com.vitaly.dlmanager.service.EventService;
@@ -51,21 +50,14 @@ public class EventServiceImpl implements EventService {
     public Mono<EventEntity> update(EventEntity eventEntity) {
         return this.eventRepository.findById(eventEntity.getId())
                 .flatMap((e -> {
-                    e.setStatus(eventEntity.getStatus());
+                    e.setUpdatedAt(LocalDateTime.now());
                     return this.eventRepository.save(eventEntity);
                 }));
     }
 
     @Override
     public Mono<EventEntity> save(EventEntity eventEntity) {
-        return this.eventRepository.save(
-                eventEntity.toBuilder()
-                        .file(null)
-                        .user(null)
-                        .status(Status.ACTIVE)
-                        .createdAt(LocalDateTime.now())
-                        .updatedAt(LocalDateTime.now())
-                        .build()
+        return eventRepository.save(eventEntity
         ).doOnSuccess(e -> log.info("IN createEvent - event {} crated", e));
     }
 

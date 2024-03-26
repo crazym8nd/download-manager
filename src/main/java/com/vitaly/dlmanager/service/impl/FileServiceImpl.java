@@ -3,8 +3,12 @@ package com.vitaly.dlmanager.service.impl;
 import com.vitaly.dlmanager.config.aws.AwsProperties;
 import com.vitaly.dlmanager.dto.AWSS3Object;
 import com.vitaly.dlmanager.dto.FileResponse;
+import com.vitaly.dlmanager.entity.Status;
+import com.vitaly.dlmanager.entity.event.EventEntity;
 import com.vitaly.dlmanager.entity.file.FileEntity;
+import com.vitaly.dlmanager.repository.EventRepository;
 import com.vitaly.dlmanager.repository.FileRepository;
+import com.vitaly.dlmanager.security.SecurityService;
 import com.vitaly.dlmanager.service.FileService;
 import com.vitaly.dlmanager.utils.FileUtils;
 import com.vitaly.dlmanager.utils.UploadStatus;
@@ -17,6 +21,7 @@ import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 import software.amazon.awssdk.core.BytesWrapper;
 import software.amazon.awssdk.core.async.AsyncRequestBody;
 import software.amazon.awssdk.core.async.AsyncResponseTransformer;
@@ -24,6 +29,7 @@ import software.amazon.awssdk.services.s3.S3AsyncClient;
 import software.amazon.awssdk.services.s3.model.*;
 
 import java.nio.ByteBuffer;
+import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
@@ -35,6 +41,8 @@ import java.util.concurrent.CompletableFuture;
 public class FileServiceImpl implements FileService {
 
     private final FileRepository fileRepository;
+    private final EventRepository eventRepository;
+    private final SecurityService securityService;
     private final S3AsyncClient s3AsyncClient;
     private final AwsProperties s3ConfigProperties;
 
@@ -45,7 +53,7 @@ public class FileServiceImpl implements FileService {
                         .bucket(s3ConfigProperties.getS3BucketName())
                         .build()))
                 .flatMap(response -> Flux.fromIterable(response.contents()))
-                .map(s3Object -> new AWSS3Object(s3Object.key(), s3Object.lastModified(),s3Object.eTag(), s3Object.size()));
+                .map(s3Object -> new AWSS3Object(s3Object.key()));
     }
 
     @Override
@@ -57,30 +65,12 @@ public class FileServiceImpl implements FileService {
                 .then();
     }
 
-    @Override
-    public Flux<FileEntity> getAll() {
-        return null;
-    }
 
     @Override
     public Mono<FileEntity> getById(Long id) {
         return fileRepository.findById(id);
     }
 
-    @Override
-    public Mono<FileEntity> update(FileEntity fileEntity) {
-        return null;
-    }
-
-    @Override
-    public Mono<FileEntity> save(FileEntity fileEntity) {
-        return null;
-    }
-
-    @Override
-    public Mono<FileEntity> delete(Long aLong) {
-        return null;
-    }
 
     @Override
     public Mono<byte[]> getByteObject(@NotNull String key) {
@@ -93,7 +83,7 @@ public class FileServiceImpl implements FileService {
 
 
     @Override
-    public Mono<FileResponse> uploadObject(FilePart filePart) {
+    public Mono<FileResponse> uploadObject(FilePart filePart, Long userId) {
 
         String filename = filePart.filename();
         Map<String, String> metadata = Map.of("filename", filename);
@@ -123,7 +113,6 @@ public class FileServiceImpl implements FileService {
                         log.info("BufferUntil - returning true, bufferedBytes={}, partCounter={}, uploadId={}",
                                 uploadStatus.getBuffered(), uploadStatus.getPartCounter(), uploadStatus.getUploadId());
 
-                        // reset buffer
                         uploadStatus.setBuffered(0);
                         return true;
                     }
@@ -140,10 +129,32 @@ public class FileServiceImpl implements FileService {
                     return status;
                 })
                 .flatMap(uploadStatus1 -> completeMultipartUpload(uploadStatus))
+                .publishOn(Schedulers.boundedElastic())
                 .map(response -> {
                     FileUtils.checkSdkResponse(response);
                     log.info("upload result: {}", response.toString());
-                    return new FileResponse(filename, uploadStatus.getUploadId(), response.location(), uploadStatus.getContentType(), response.eTag());
+
+                    FileEntity file = FileEntity.builder()
+                            .fileName(filename)
+                            .location(response.location())
+                            .createdAt(LocalDateTime.now())
+                            .updatedAt(LocalDateTime.now())
+                            .status(Status.ACTIVE)
+                            .build();
+
+                    fileRepository.save(file)
+                            .publishOn(Schedulers.boundedElastic())
+                            .flatMap(savedfile -> eventRepository.save(EventEntity
+                                    .builder()
+                                    .userId(userId)
+                                    .fileId(file.getId())
+                                    .createdAt(LocalDateTime.now())
+                                    .updatedAt(LocalDateTime.now())
+                                    .status(Status.ACTIVE)
+                                    .build())
+                            ).subscribe();
+
+                    return new FileResponse(filename, response.location(), uploadStatus.getContentType());
                 });
     }
 
