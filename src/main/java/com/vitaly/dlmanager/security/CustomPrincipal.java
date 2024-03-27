@@ -3,6 +3,7 @@ package com.vitaly.dlmanager.security;
 // gh crazym8nd
 
 
+import com.vitaly.dlmanager.entity.user.UserRole;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,9 +17,12 @@ public class CustomPrincipal implements Principal {
 
     private Long id;
     private String username;
+    private UserRole userRole;
+
 
     @Override
     public String getName() {
         return username;
     }
+
 }

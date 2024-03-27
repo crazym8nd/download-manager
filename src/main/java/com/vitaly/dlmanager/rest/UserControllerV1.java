@@ -75,10 +75,10 @@ public class UserControllerV1 {
     }
 
     @DeleteMapping("/{id}")
-    public Mono<ResponseEntity<Void>> delete(@PathVariable Long id) {
+    public Mono<ResponseEntity<Object>> delete(@PathVariable Long id) {
         return userService.getById(id)
-                .flatMap(user -> userService.delete(user.getId())
-                        .then(Mono.just(new ResponseEntity<Void>(HttpStatus.OK))))
-                .defaultIfEmpty(new ResponseEntity<Void>(HttpStatus.NOT_FOUND));
+                .flatMap(event -> userService.delete(event.getId()))
+                .then(Mono.just(new ResponseEntity<>(HttpStatus.OK)))
+                .defaultIfEmpty(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 }

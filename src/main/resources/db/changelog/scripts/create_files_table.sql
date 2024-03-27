@@ -24,5 +24,12 @@ create table if not exists files
     unique
 (
     file_name
-)
+),
+    user_id
+        bigint
+        not
+        null,
+    constraint fk_files_user_id
+    foreign key
+(user_id) references users (id)
     );

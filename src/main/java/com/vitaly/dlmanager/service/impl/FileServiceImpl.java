@@ -1,7 +1,6 @@
 package com.vitaly.dlmanager.service.impl;
 
 import com.vitaly.dlmanager.config.aws.AwsProperties;
-import com.vitaly.dlmanager.dto.AWSS3Object;
 import com.vitaly.dlmanager.dto.FileResponse;
 import com.vitaly.dlmanager.entity.Status;
 import com.vitaly.dlmanager.entity.event.EventEntity;
@@ -32,6 +31,7 @@ import java.nio.ByteBuffer;
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 
@@ -46,23 +46,20 @@ public class FileServiceImpl implements FileService {
     private final S3AsyncClient s3AsyncClient;
     private final AwsProperties s3ConfigProperties;
 
-    @Override
-    public Flux<AWSS3Object> getObjects() {
-        log.info("Listing objects in S3 bucket: {}", s3ConfigProperties.getS3BucketName());
-        return Flux.from(s3AsyncClient.listObjectsV2Paginator(ListObjectsV2Request.builder()
-                        .bucket(s3ConfigProperties.getS3BucketName())
-                        .build()))
-                .flatMap(response -> Flux.fromIterable(response.contents()))
-                .map(s3Object -> new AWSS3Object(s3Object.key()));
+    public Flux<FileEntity> getAllFilesByUserId(Optional<Long> userId) {
+        if (userId.isPresent()) {
+            return fileRepository.findAllByUserId(userId.get());
+        } else {
+            return fileRepository.findAll();
+        }
     }
 
     @Override
-    public Mono<Void> deleteObject(@NotNull String objectKey) {
-        log.info("Delete Object with key: {}", objectKey);
-        return Mono.just(DeleteObjectRequest.builder().bucket(s3ConfigProperties.getS3BucketName()).key(objectKey).build())
-                .map(s3AsyncClient::deleteObject)
-                .flatMap(Mono::fromFuture)
-                .then();
+    public Mono<FileEntity> delete(Long id) {
+        return this.fileRepository
+                .findById(id)
+                .flatMap(f ->
+                        this.fileRepository.deleteById(f.getId()).thenReturn(f));
     }
 
 

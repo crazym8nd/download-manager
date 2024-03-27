@@ -3,6 +3,7 @@ package com.vitaly.dlmanager.security;
 // gh crazym8nd
 
 
+import com.vitaly.dlmanager.entity.user.UserRole;
 import io.jsonwebtoken.Claims;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -24,7 +25,7 @@ public class UserAuthenticationBearer {
         List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(role));
 
         Long principalId = Long.parseLong(subject);
-        CustomPrincipal principal = new CustomPrincipal(principalId, username);
+        CustomPrincipal principal = new CustomPrincipal(principalId, username, UserRole.valueOf(role));
 
         return Mono.justOrEmpty(new UsernamePasswordAuthenticationToken(principal, null, authorities));
     }

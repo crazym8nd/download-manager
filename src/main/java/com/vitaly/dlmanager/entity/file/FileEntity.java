@@ -31,6 +31,8 @@ public class FileEntity implements Persistable<Long> {
     private LocalDateTime updatedAt;
     private Status status;
 
+    private Long userId;
+
     @Override
     public boolean isNew() {
         return Objects.isNull(id);

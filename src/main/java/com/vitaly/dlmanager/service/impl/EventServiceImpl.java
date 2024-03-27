@@ -28,19 +28,27 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public Flux<EventEntity> getAll() {
-        return this.eventRepository.findAll();
+        return this.eventRepository.findAll()
+                .flatMap(eventEntity ->
+                        Mono.zip(
+                                this.userService.getById(eventEntity.getUserId()),
+                                this.fileService.getById(eventEntity.getFileId())
+                        ).map(tuple -> {
+                            eventEntity.setUser(tuple.getT1());
+                            eventEntity.setFile(tuple.getT2());
+                            return eventEntity;
+                        })
+                );
     }
 
     @Override
     public Mono<EventEntity> getById(Long id) {
-        //TODO получаем только ид без самого юзера и файла
         return this.eventRepository.findById(id)
                 .flatMap(eventEntity -> Mono.zip(userService.getById(eventEntity.getUserId()),
                             fileService.getById(eventEntity.getFileId()))
                             .map(tuples -> {
                                 eventEntity.setUser(tuples.getT1());
                                 eventEntity.setFile(tuples.getT2());
-
                                 return eventEntity;
                             }));
     }

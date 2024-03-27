@@ -21,5 +21,6 @@ public class FileDto {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private Status status;
+    private Long userId;
 
 }
