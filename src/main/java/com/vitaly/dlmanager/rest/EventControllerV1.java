@@ -4,11 +4,14 @@ package com.vitaly.dlmanager.rest;
 
 import com.vitaly.dlmanager.dto.EventDto;
 import com.vitaly.dlmanager.entity.event.EventEntity;
+import com.vitaly.dlmanager.entity.user.UserRole;
 import com.vitaly.dlmanager.mapper.EventMapper;
+import com.vitaly.dlmanager.security.CustomPrincipal;
 import com.vitaly.dlmanager.service.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -16,6 +19,7 @@ import reactor.core.publisher.Mono;
 @RestController
 @RequestMapping(value = "/api/v1/events")
 public class EventControllerV1 {
+
     private final EventService eventService;
     private final EventMapper eventMapper;
 
@@ -26,21 +30,41 @@ public class EventControllerV1 {
     }
 
     @GetMapping("/{id}")
-    public Mono<ResponseEntity<EventDto>> getEventById(@PathVariable Long id) {
+    public Mono<ResponseEntity<EventDto>> getEventById(Authentication authentication, @PathVariable Long id) {
+        CustomPrincipal customPrincipal = (CustomPrincipal) authentication.getPrincipal();
+        UserRole role = customPrincipal.getUserRole();
+        Long userId = customPrincipal.getId();
+
         return eventService.getById(id)
-                .map(event -> {
-                    EventDto eventDto = eventMapper.map(event);
-                    return ResponseEntity.ok(eventDto);
+                .flatMap(event -> {
+                    if (UserRole.ADMIN.equals(role) || UserRole.MODERATOR.equals(role) || event.getUserId().equals(userId)) {
+                        return Mono.just(ResponseEntity.ok(eventMapper.map(event)));
+                    } else {
+                        return Mono.just(new ResponseEntity<EventDto>(HttpStatus.FORBIDDEN));
+                    }
                 })
-                .defaultIfEmpty(new ResponseEntity<>(HttpStatus.NO_CONTENT));
+                .defaultIfEmpty(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     @GetMapping
-    public Mono<ResponseEntity<Flux<EventDto>>> getAllEvents() {
-        Flux<EventDto> eventDtoFlux = eventService.getAll()
-                .map(eventMapper::map);
+    public Mono<ResponseEntity<Flux<EventDto>>> getAllEvents(Authentication authentication) {
+        CustomPrincipal customPrincipal = (CustomPrincipal) authentication.getPrincipal();
+        UserRole role = customPrincipal.getUserRole();
+        Long userId = customPrincipal.getId();
+
+        Flux<EventDto> eventDtoFlux;
+        if (UserRole.USER.equals(role)) {
+            eventDtoFlux = eventService.getAllByUserId(userId)
+                    .map(eventMapper::map);
+        } else if (UserRole.MODERATOR.equals(role) || UserRole.ADMIN.equals(role)) {
+            eventDtoFlux = eventService.getAll()
+                    .map(eventMapper::map);
+        } else {
+            eventDtoFlux = Flux.empty();
+        }
         return Mono.just(ResponseEntity.ok(eventDtoFlux));
     }
+
 
     @PostMapping
     public Mono<ResponseEntity<EventEntity>> save(@RequestBody EventEntity eventEntity) {
@@ -53,20 +77,37 @@ public class EventControllerV1 {
     }
 
     @PutMapping("/{id}")
-    public Mono<ResponseEntity<EventEntity>> update(@PathVariable Long id, @RequestBody EventEntity eventEntity) {
-        if (eventEntity == null) {
-            return Mono.just(new ResponseEntity<>(HttpStatus.BAD_REQUEST));
-        }
-        return eventService.update(eventEntity)
-                .map(updatedEvent -> new ResponseEntity<>(updatedEvent, HttpStatus.OK))
-                .defaultIfEmpty(new ResponseEntity<>(HttpStatus.BAD_REQUEST));
+    public Mono<ResponseEntity<EventDto>> update(@PathVariable Long id, @RequestBody EventDto eventDto, Authentication authentication) {
+        CustomPrincipal customPrincipal = (CustomPrincipal) authentication.getPrincipal();
+        UserRole role = customPrincipal.getUserRole();
+        Long userId = customPrincipal.getId();
+
+        return eventService.getById(id)
+                .flatMap(event -> {
+                    if (UserRole.ADMIN.equals(role) || UserRole.MODERATOR.equals(role) || event.getUserId().equals(userId)) {
+                        return Mono.just(ResponseEntity.ok(eventMapper.map(event)));
+                    } else {
+                        return Mono.just(new ResponseEntity<EventDto>(HttpStatus.FORBIDDEN));
+                    }
+                });
     }
 
     @DeleteMapping("/{id}")
-    public Mono<ResponseEntity<Object>> delete(@PathVariable Long id) {
+    public Mono<ResponseEntity<Object>> delete(@PathVariable Long id, Authentication authentication) {
+        CustomPrincipal customPrincipal = (CustomPrincipal) authentication.getPrincipal();
+        UserRole role = customPrincipal.getUserRole();
+        Long userId = customPrincipal.getId();
+
+
         return eventService.getById(id)
-                .flatMap(event -> eventService.delete(event.getId()))
-                .then(Mono.just(new ResponseEntity<>(HttpStatus.OK)))
+                .flatMap(event -> {
+                    if (UserRole.ADMIN.equals(role) || UserRole.MODERATOR.equals(role) || event.getUserId().equals(userId)) {
+                        return eventService.delete(id)
+                                .then(Mono.just(new ResponseEntity<>(HttpStatus.NO_CONTENT)));
+                    } else {
+                        return Mono.just(new ResponseEntity<>(HttpStatus.FORBIDDEN));
+                    }
+                })
                 .defaultIfEmpty(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 }

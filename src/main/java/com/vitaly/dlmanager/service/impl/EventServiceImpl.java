@@ -40,6 +40,20 @@ public class EventServiceImpl implements EventService {
                         })
                 );
     }
+    @Override
+    public Flux<EventEntity> getAllByUserId(Long userId) {
+        return eventRepository.findAllByUserId(userId)
+                .flatMap(eventEntity ->
+                        Mono.zip(
+                                this.userService.getById(eventEntity.getUserId()),
+                                this.fileService.getById(eventEntity.getFileId())
+                        ).map(tuple -> {
+                            eventEntity.setUser(tuple.getT1());
+                            eventEntity.setFile(tuple.getT2());
+                            return eventEntity;
+                        })
+                );
+    }
 
     @Override
     public Mono<EventEntity> getById(Long id) {
@@ -76,4 +90,11 @@ public class EventServiceImpl implements EventService {
                 .flatMap(e ->
                         this.eventRepository.deleteById(e.getId()).thenReturn(e));
     }
+
+    public Mono<Boolean> userHasEvent(Long userId, Long eventId){
+        return this.eventRepository.findById(eventId)
+                .map(eventEntity -> eventEntity.getUserId().equals(userId))
+                .defaultIfEmpty(false);
+    }
+
 }
