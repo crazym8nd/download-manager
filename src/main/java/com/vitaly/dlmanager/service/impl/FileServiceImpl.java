@@ -30,7 +30,6 @@ import java.nio.ByteBuffer;
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 
@@ -44,12 +43,11 @@ public class FileServiceImpl implements FileService {
     private final S3AsyncClient s3AsyncClient;
     private final AwsProperties s3ConfigProperties;
 
-    public Flux<FileEntity> getAllFilesByUserId(Optional<Long> userId) {
-        if (userId.isPresent()) {
-            return fileRepository.findAllByUserId(userId.get());
-        } else {
-            return fileRepository.findAll();
-        }
+    public Flux<FileEntity> getAllFilesByUserId(Long userId) {
+            return fileRepository.findAllByUserId(userId);
+    }
+    public Flux<FileEntity> getAll(){
+        return fileRepository.findAll();
     }
 
     @Override

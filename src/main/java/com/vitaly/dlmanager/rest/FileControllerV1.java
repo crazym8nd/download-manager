@@ -1,6 +1,4 @@
 package com.vitaly.dlmanager.rest;
-//  01-Mar-24
-// gh crazym8nd
 
 import com.vitaly.dlmanager.dto.SuccessResponse;
 import com.vitaly.dlmanager.entity.user.UserRole;
@@ -17,8 +15,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
-import java.util.Optional;
 
 @RequiredArgsConstructor
 @RestController
@@ -78,12 +74,16 @@ public class FileControllerV1 {
     }
 
     @GetMapping
-    public Flux<SuccessResponse> getObject(Authentication authentication) {
+    public Flux<SuccessResponse> getListOfFiles(Authentication authentication) {
         CustomPrincipal customPrincipal = (CustomPrincipal) authentication.getPrincipal();
         UserRole role = customPrincipal.getUserRole();
-        Optional<Long> userIdOptional = UserRole.USER.equals(role) ? Optional.of(customPrincipal.getId()) : Optional.empty();
+        Long userId = customPrincipal.getId();
 
-        return fileService.getAllFilesByUserId(userIdOptional)
+        if (UserRole.ADMIN.equals(role) || UserRole.MODERATOR.equals(role)) {
+            return fileService.getAll()
+                    .map(fileEntity -> new SuccessResponse(fileMapper.map(fileEntity), "Result found"));
+        }
+        return fileService.getAllFilesByUserId(userId)
                 .map(fileEntity -> new SuccessResponse(fileMapper.map(fileEntity), "Result found"));
     }
 }

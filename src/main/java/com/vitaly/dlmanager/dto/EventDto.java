@@ -1,8 +1,8 @@
 package com.vitaly.dlmanager.dto;
-//  22-Feb-24
-// gh crazym8nd
+    
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.vitaly.dlmanager.entity.Status;
@@ -14,10 +14,13 @@ import java.time.LocalDateTime;
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class EventDto {
     private Long id;
+    @JsonIgnore
     private UserDto user;
+    @JsonIgnore
     private FileDto file;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    @JsonIgnore
     private Status status;
 
     private Long userId;

@@ -3,6 +3,7 @@ package com.vitaly.dlmanager.dto;
 // gh crazym8nd
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
@@ -20,6 +21,7 @@ import java.util.List;
 public class UserDto {
     private Long id;
     private String username;
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String email;
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
@@ -29,5 +31,6 @@ public class UserDto {
     private Status status;
 
     @Transient
+    @JsonIgnore
     private List<EventDto> events;
 }

@@ -2,7 +2,6 @@ package com.vitaly.dlmanager.rest;
 
 
 import com.vitaly.dlmanager.dto.UserDto;
-import com.vitaly.dlmanager.entity.user.UserEntity;
 import com.vitaly.dlmanager.entity.user.UserRole;
 import com.vitaly.dlmanager.mapper.UserMapper;
 import com.vitaly.dlmanager.security.CustomPrincipal;
@@ -56,13 +55,13 @@ public class UserControllerV1 {
     }
 
     @PostMapping
-    public Mono<ResponseEntity<UserEntity>> save(@RequestBody UserEntity userEntity, Authentication authentication) {
+    public Mono<ResponseEntity<UserDto>> save(@RequestBody UserDto userDto, Authentication authentication) {
         CustomPrincipal customPrincipal = (CustomPrincipal) authentication.getPrincipal();
         UserRole role = customPrincipal.getUserRole();
 
         if (UserRole.MODERATOR.equals(role) || UserRole.ADMIN.equals(role)) {
-            return userService.save(userEntity)
-                    .map(savedUser -> new ResponseEntity<>(savedUser, HttpStatus.CREATED))
+            return userService.save(userMapper.map(userDto))
+                    .map(savedUser -> new ResponseEntity<>(userMapper.map(savedUser), HttpStatus.CREATED))
                     .defaultIfEmpty(new ResponseEntity<>(HttpStatus.BAD_REQUEST));
         } else {
             return Mono.just(new ResponseEntity<>(HttpStatus.FORBIDDEN));
@@ -70,13 +69,13 @@ public class UserControllerV1 {
     }
 
     @PutMapping("/{id}")
-    public Mono<ResponseEntity<UserEntity>> update(@PathVariable Long id, @RequestBody UserEntity userEntity, Authentication authentication) {
+    public Mono<ResponseEntity<UserDto>> update(@PathVariable Long id, @RequestBody UserDto userDto, Authentication authentication) {
         CustomPrincipal customPrincipal = (CustomPrincipal) authentication.getPrincipal();
         UserRole role = customPrincipal.getUserRole();
 
         if (UserRole.MODERATOR.equals(role) || UserRole.ADMIN.equals(role)) {
-            return userService.update(userEntity)
-                    .map(updatedUser -> new ResponseEntity<>(updatedUser, HttpStatus.OK))
+            return userService.update(userMapper.map(userDto))
+                    .map(updatedUser -> new ResponseEntity<>(userMapper.map(updatedUser), HttpStatus.OK))
                     .defaultIfEmpty(new ResponseEntity<>(HttpStatus.BAD_REQUEST));
         } else {
             return Mono.just(new ResponseEntity<>(HttpStatus.FORBIDDEN));

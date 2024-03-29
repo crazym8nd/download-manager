@@ -3,7 +3,6 @@ package com.vitaly.dlmanager.rest;
 // gh crazym8nd
 
 import com.vitaly.dlmanager.dto.EventDto;
-import com.vitaly.dlmanager.entity.event.EventEntity;
 import com.vitaly.dlmanager.entity.user.UserRole;
 import com.vitaly.dlmanager.mapper.EventMapper;
 import com.vitaly.dlmanager.security.CustomPrincipal;
@@ -62,12 +61,14 @@ public class EventControllerV1 {
 
 
     @PostMapping
-    public Mono<ResponseEntity<EventEntity>> save(@RequestBody EventEntity eventEntity) {
-        if (eventEntity == null) {
+    public Mono<ResponseEntity<EventDto>> save(@RequestBody EventDto eventDto) {
+        if (eventDto == null) {
             return Mono.just(new ResponseEntity<>(HttpStatus.BAD_REQUEST));
         }
-        return eventService.save(eventEntity)
-                .map(savedEvent -> new ResponseEntity<>(savedEvent, HttpStatus.CREATED))
+
+
+        return eventService.save(eventMapper.map(eventDto))
+                .map(savedEvent -> new ResponseEntity<>(eventMapper.map(savedEvent), HttpStatus.CREATED))
                 .defaultIfEmpty(new ResponseEntity<>(HttpStatus.BAD_REQUEST));
     }
 
@@ -82,7 +83,7 @@ public class EventControllerV1 {
                     if (UserRole.ADMIN.equals(role) || UserRole.MODERATOR.equals(role) || event.getUserId().equals(userId)) {
                         return Mono.just(ResponseEntity.ok(eventMapper.map(event)));
                     } else {
-                        return Mono.just(new ResponseEntity<EventDto>(HttpStatus.FORBIDDEN));
+                        return Mono.just(new ResponseEntity<>(HttpStatus.FORBIDDEN));
                     }
                 });
     }

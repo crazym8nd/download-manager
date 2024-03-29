@@ -1,6 +1,4 @@
 package com.vitaly.dlmanager.mapper;
-//  22-Feb-24
-// gh crazym8nd
 
 
 import com.vitaly.dlmanager.dto.FileDto;

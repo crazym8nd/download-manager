@@ -1,6 +1,5 @@
 package com.vitaly.dlmanager.entity.event;
-//  22-Feb-24
-// gh crazym8nd
+    
 
 
 import com.vitaly.dlmanager.entity.Status;

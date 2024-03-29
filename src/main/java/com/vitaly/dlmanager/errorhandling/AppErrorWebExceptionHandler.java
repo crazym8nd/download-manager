@@ -1,6 +1,5 @@
 package com.vitaly.dlmanager.errorhandling;
-//  22-Feb-24
-// gh crazym8nd
+    
 
 
 import org.springframework.boot.autoconfigure.web.WebProperties;
