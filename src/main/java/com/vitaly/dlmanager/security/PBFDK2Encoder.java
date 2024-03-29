@@ -1,6 +1,5 @@
 package com.vitaly.dlmanager.security;
-//  17-Feb-24
-// gh crazym8nd
+
 
 
 import org.springframework.beans.factory.annotation.Value;

@@ -1,6 +1,5 @@
 package com.vitaly.dlmanager.mapper;
-//  17-Feb-24
-// gh crazym8nd
+
 
 
 import com.vitaly.dlmanager.dto.UserDto;

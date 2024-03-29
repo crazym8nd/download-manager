@@ -1,6 +1,5 @@
 package com.vitaly.dlmanager.repository;
-//  17-Feb-24
-// gh crazym8nd
+
 
 
 import com.vitaly.dlmanager.entity.user.UserEntity;

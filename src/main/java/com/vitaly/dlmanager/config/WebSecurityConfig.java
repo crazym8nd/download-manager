@@ -1,6 +1,5 @@
 package com.vitaly.dlmanager.config;
-//  17-Feb-24
-// gh crazym8nd
+
 
 import com.vitaly.dlmanager.security.AuthenticationManager;
 import com.vitaly.dlmanager.security.BearerTokenServerAuthenticationConverter;

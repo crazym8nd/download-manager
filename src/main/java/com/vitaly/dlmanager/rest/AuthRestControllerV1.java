@@ -1,6 +1,5 @@
 package com.vitaly.dlmanager.rest;
-//  17-Feb-24
-// gh crazym8nd
+
 
 import com.vitaly.dlmanager.dto.AuthRequestDto;
 import com.vitaly.dlmanager.dto.AuthResponseDto;

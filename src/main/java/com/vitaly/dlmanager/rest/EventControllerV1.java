@@ -1,6 +1,5 @@
 package com.vitaly.dlmanager.rest;
-//  01-Mar-24
-// gh crazym8nd
+
 
 import com.vitaly.dlmanager.dto.EventDto;
 import com.vitaly.dlmanager.entity.user.UserRole;

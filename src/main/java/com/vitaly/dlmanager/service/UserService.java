@@ -8,5 +8,5 @@ import reactor.core.publisher.Mono;
 public interface UserService extends GenericService<UserEntity, Long> {
     Mono<UserEntity> getUserByUsername(String username);
     Mono<UserEntity> registerUser(UserEntity user);
-
+    Mono<UserEntity> getUserWIthEvents(Long id);
 }

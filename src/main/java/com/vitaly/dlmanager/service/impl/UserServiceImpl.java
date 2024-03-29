@@ -1,14 +1,14 @@
 package com.vitaly.dlmanager.service.impl;
-//  17-Feb-24
-// gh crazym8nd
+
 
 import com.vitaly.dlmanager.entity.Status;
 import com.vitaly.dlmanager.entity.user.UserEntity;
 import com.vitaly.dlmanager.entity.user.UserRole;
+import com.vitaly.dlmanager.repository.EventRepository;
 import com.vitaly.dlmanager.repository.UserRepository;
 import com.vitaly.dlmanager.service.UserService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,15 +19,12 @@ import java.time.LocalDateTime;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final EventRepository eventRepository;
 
-    @Autowired
-    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-    }
 
     @Override
     public Mono<UserEntity> registerUser(UserEntity user) {
@@ -55,6 +52,15 @@ public class UserServiceImpl implements UserService {
     @Override
     public Mono<UserEntity> getById(Long id) {
         return this.userRepository.findById(id);
+    }
+
+    @Override
+    public Mono<UserEntity> getUserWIthEvents(Long id){
+        return userRepository.findById(id)
+                .flatMap(userEntity -> eventRepository.findAllByUserId(id)
+                        .collectList()
+                        .doOnNext(userEntity::setEvents)
+                        .thenReturn(userEntity));
     }
 
     @Override

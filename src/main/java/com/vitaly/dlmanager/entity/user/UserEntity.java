@@ -1,13 +1,10 @@
 package com.vitaly.dlmanager.entity.user;
-//  17-Feb-24
-// gh crazym8nd
 
 
 import com.vitaly.dlmanager.entity.Status;
 import com.vitaly.dlmanager.entity.event.EventEntity;
 import lombok.*;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.Transient;
 import org.springframework.data.domain.Persistable;
 import org.springframework.data.relational.core.mapping.Table;
 
@@ -33,7 +30,6 @@ public class UserEntity implements Persistable<Long> {
     private LocalDateTime updatedAt;
     private Status status;
 
-    @Transient
     private List<EventEntity> events;
 
     @ToString.Include(name = "password")

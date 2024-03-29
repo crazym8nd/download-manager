@@ -28,7 +28,7 @@ public class UserControllerV1 {
         UserRole role = customPrincipal.getUserRole();
 
         if (UserRole.MODERATOR.equals(role) || UserRole.ADMIN.equals(role)) {
-            return userService.getById(id)
+            return userService.getUserWIthEvents(id)
                     .map(user -> {
                         UserDto userDto = userMapper.map(user);
                         return ResponseEntity.ok(userDto);

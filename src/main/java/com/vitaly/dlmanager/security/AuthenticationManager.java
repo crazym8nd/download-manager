@@ -1,6 +1,5 @@
 package com.vitaly.dlmanager.security;
-//  17-Feb-24
-// gh crazym8nd
+
 
 import com.vitaly.dlmanager.entity.Status;
 import com.vitaly.dlmanager.exception.UnauthorizedException;
