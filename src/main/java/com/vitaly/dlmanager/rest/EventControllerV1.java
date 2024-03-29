@@ -8,7 +8,7 @@ import com.vitaly.dlmanager.entity.user.UserRole;
 import com.vitaly.dlmanager.mapper.EventMapper;
 import com.vitaly.dlmanager.security.CustomPrincipal;
 import com.vitaly.dlmanager.service.EventService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -18,16 +18,11 @@ import reactor.core.publisher.Mono;
 
 @RestController
 @RequestMapping(value = "/api/v1/events")
+@RequiredArgsConstructor
 public class EventControllerV1 {
 
     private final EventService eventService;
     private final EventMapper eventMapper;
-
-    @Autowired
-    public EventControllerV1(EventService eventService, EventMapper eventMapper) {
-        this.eventService = eventService;
-        this.eventMapper = eventMapper;
-    }
 
     @GetMapping("/{id}")
     public Mono<ResponseEntity<EventDto>> getEventById(Authentication authentication, @PathVariable Long id) {

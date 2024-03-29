@@ -5,7 +5,6 @@ package com.vitaly.dlmanager.service;
 
 import com.vitaly.dlmanager.dto.FileResponse;
 import com.vitaly.dlmanager.entity.file.FileEntity;
-import jakarta.validation.constraints.NotNull;
 import org.springframework.http.codec.multipart.FilePart;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -15,7 +14,7 @@ import java.util.Optional;
 public interface FileService {
     Mono<FileResponse> uploadObject(FilePart filePart, Long userId);
 
-    Mono<byte[]> getByteObject(@NotNull String key);
+    Mono<byte[]> downloadFile(Long fileId);
 
    Flux<FileEntity> getAllFilesByUserId(Optional<Long> userId);
 

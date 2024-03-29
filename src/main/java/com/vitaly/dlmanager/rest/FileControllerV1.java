@@ -6,7 +6,6 @@ import com.vitaly.dlmanager.dto.SuccessResponse;
 import com.vitaly.dlmanager.entity.user.UserRole;
 import com.vitaly.dlmanager.mapper.FileMapper;
 import com.vitaly.dlmanager.security.CustomPrincipal;
-import com.vitaly.dlmanager.security.SecurityService;
 import com.vitaly.dlmanager.service.FileService;
 import com.vitaly.dlmanager.utils.FileUtils;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +27,6 @@ import java.util.Optional;
 public class FileControllerV1 {
 
     private final FileService fileService;
-    private final SecurityService securityService;
     private final FileMapper fileMapper;
 
     @PostMapping()
@@ -43,20 +41,40 @@ public class FileControllerV1 {
                 })
                 .map(fileResponse -> new SuccessResponse(fileResponse, "Upload successfully"));
     }
+    @GetMapping(path = "/{id}")
+    public Mono<SuccessResponse> download(@PathVariable("id") Long id,Authentication authentication) {
+        CustomPrincipal customPrincipal = (CustomPrincipal) authentication.getPrincipal();
+        UserRole role = customPrincipal.getUserRole();
+        Long userId = customPrincipal.getId();
 
-    @GetMapping(path = "/{fileKey}")
-    public Mono<SuccessResponse> download(@PathVariable("fileKey") String fileKey) {
-
-        return fileService.getByteObject(fileKey)
-                .map(objectKey -> new SuccessResponse(objectKey, "Object byte response"));
+        return fileService.getById(id)
+                .flatMap(fileEntity -> {
+                    if (UserRole.ADMIN.equals(role) || UserRole.MODERATOR.equals(role) || fileEntity.getUserId().equals(userId)) {
+                        return fileService.downloadFile(id)
+                                .map(objectKey -> new SuccessResponse(objectKey, "Object byte response"));
+                    } else {
+                        return Mono.just(new SuccessResponse(null, HttpStatus.FORBIDDEN.toString()));
+                    }
+                })
+                .switchIfEmpty(Mono.defer(() -> Mono.just(new SuccessResponse(null, HttpStatus.NOT_FOUND.toString()))));
     }
 
     @DeleteMapping("/{id}")
-    public Mono<ResponseEntity<Object>> delete(@PathVariable Long id) {
+    public Mono<ResponseEntity<Object>> delete(@PathVariable Long id,Authentication authentication) {
+        CustomPrincipal customPrincipal = (CustomPrincipal) authentication.getPrincipal();
+        UserRole role = customPrincipal.getUserRole();
+        Long userId = customPrincipal.getId();
+
+
         return fileService.getById(id)
-                .flatMap(event -> fileService.delete(event.getId()))
-                .then(Mono.just(new ResponseEntity<>(HttpStatus.OK)))
-                .defaultIfEmpty(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+                .flatMap(fileEntity -> {
+                    if (UserRole.ADMIN.equals(role) || UserRole.MODERATOR.equals(role) || fileEntity.getUserId().equals(userId)) {
+                        return fileService.delete(id)
+                                .then(Mono.just(new ResponseEntity<>(HttpStatus.OK)));
+                    } else {
+                        return Mono.just(new ResponseEntity<>(HttpStatus.FORBIDDEN));
+                    }
+                }).defaultIfEmpty(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     @GetMapping

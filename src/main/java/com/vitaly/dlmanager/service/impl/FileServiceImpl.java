@@ -7,7 +7,6 @@ import com.vitaly.dlmanager.entity.event.EventEntity;
 import com.vitaly.dlmanager.entity.file.FileEntity;
 import com.vitaly.dlmanager.repository.EventRepository;
 import com.vitaly.dlmanager.repository.FileRepository;
-import com.vitaly.dlmanager.security.SecurityService;
 import com.vitaly.dlmanager.service.FileService;
 import com.vitaly.dlmanager.utils.FileUtils;
 import com.vitaly.dlmanager.utils.UploadStatus;
@@ -42,7 +41,6 @@ public class FileServiceImpl implements FileService {
 
     private final FileRepository fileRepository;
     private final EventRepository eventRepository;
-    private final SecurityService securityService;
     private final S3AsyncClient s3AsyncClient;
     private final AwsProperties s3ConfigProperties;
 
@@ -69,8 +67,15 @@ public class FileServiceImpl implements FileService {
     }
 
 
+
     @Override
-    public Mono<byte[]> getByteObject(@NotNull String key) {
+    public Mono<byte[]> downloadFile(Long fileId){
+        return fileRepository.findById(fileId).flatMap(
+                fileEntity -> getByteObject(fileEntity.getFileName())
+        );
+    }
+
+    private Mono<byte[]> getByteObject(@NotNull String key) {
         log.debug("Fetching object as byte array from S3 bucket: {}, key: {}", s3ConfigProperties.getS3BucketName(), key);
         return Mono.just(GetObjectRequest.builder().bucket(s3ConfigProperties.getS3BucketName()).key(key).build())
                 .map(it -> s3AsyncClient.getObject(it, AsyncResponseTransformer.toBytes()))
@@ -137,6 +142,7 @@ public class FileServiceImpl implements FileService {
                             .createdAt(LocalDateTime.now())
                             .updatedAt(LocalDateTime.now())
                             .status(Status.ACTIVE)
+                            .userId(userId)
                             .build();
 
                     fileRepository.save(file)
