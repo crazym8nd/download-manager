@@ -1,11 +1,11 @@
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '3.2.2'
+    id 'org.springframework.boot' version '3.2.4'
     id 'io.spring.dependency-management' version '1.1.4'
 }
 
 group = 'com.vitaly'
-version = '0.0.1-SNAPSHOT'
+version = '0.0.1'
 
 java {
     sourceCompatibility = '17'
@@ -16,44 +16,53 @@ repositories {
 }
 
 dependencies {
-
+    //spring
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.session:spring-session-core'
     implementation 'org.springframework.boot:spring-boot-starter-data-r2dbc'
+    implementation "org.springframework.boot:spring-boot-docker-compose:${springDockerComposeVersion}"
 
 
+    //mysql
     implementation "io.asyncer:r2dbc-mysql:$r2dbcMysqlVersion"
     implementation "com.mysql:mysql-connector-j:$mysqlConnectorVersion"
 
-
-    implementation "org.liquibase:liquibase-core:$luquibaseVersion"
-
-    implementation "com.github.spotbugs:spotbugs:$spotbugsVersion"
-
+    //lombok
     implementation "org.projectlombok:lombok:$lombokVersion"
+    annotationProcessor "org.projectlombok:lombok:$lombokVersion"
+    compileOnly "org.projectlombok:lombok:$lombokVersion"
 
+
+    //jwt
     implementation "io.jsonwebtoken:jjwt-api:$jjwtVersion"
     runtimeOnly "io.jsonwebtoken:jjwt-impl:$jjwtVersion"
     runtimeOnly "io.jsonwebtoken:jjwt-jackson:$jjwtVersion"
 
     implementation "jakarta.xml.bind:jakarta.xml.bind-api:$jakartabapiVersion"
-    implementation "org.projectlombok:lombok:$lombokVersion"
 
-    annotationProcessor "org.projectlombok:lombok:$lombokVersion"
-    compileOnly "org.projectlombok:lombok:$lombokVersion"
-
+    //mapstruct
     implementation "org.mapstruct:mapstruct:$mapstructVersion"
     annotationProcessor "org.mapstruct:mapstruct-processor:$mapstructVersion"
 
-    implementation 'software.amazon.awssdk:s3:2.18.41'
-    implementation 'software.amazon.awssdk:netty-nio-client:2.18.41'
+    //aws
+    implementation "software.amazon.awssdk:s3:$awsS3Version"
+    implementation "software.amazon.awssdk:netty-nio-client:$awsS3Version"
 
-
+    //spring doc openapi
     implementation "org.springdoc:springdoc-openapi-starter-webflux-ui:$springdocOpenAPIVersion"
 
-
+    //test
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.boot:spring-boot-testcontainers'
     testImplementation 'io.projectreactor:reactor-test'
     testImplementation 'org.springframework.security:spring-security-test'
+    testImplementation 'org.testcontainers:junit-jupiter'
+    testImplementation 'org.testcontainers:mysql'
+    testImplementation 'org.testcontainers:r2dbc'
 }
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+

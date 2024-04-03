@@ -1,21 +1,23 @@
 server:
   port: 8083
-  locale: en-US
-  time-zone: UTC
 
 spring:
+  docker:
+    compose:
+      enabled: true
+      lifecycle-management: start_and_stop
+      start:
+        log-level: info
+        command: up
+      stop:
+        command: down
+  sql:
+    init:
+      mode: always
   r2dbc:
     url: r2dbc:pool:mysql://localhost:3306/dl_manager?serverTimezone=Europe/Moscow
     username: root
     password: 666666
-  liquibase:
-    url: jdbc:mysql://localhost:3306/dl_manager?serverTimezone=Europe/Moscow
-    user: root
-    password: 666666
-    change-log: db/changelog/app-changelog.xml
-    default-schema: dl_manager
-  jackson:
-    time-zone: Europe/Moscow
 
 jwt:
   password:
@@ -33,5 +35,3 @@ aws:
   s3BucketName: springfluxr2dbc
   multipartMinPartSize: 5242880
   endpoint: https://storage.yandexcloud.net/
-
-

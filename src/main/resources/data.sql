@@ -11,3 +11,13 @@ values ('testname', 'kWU0fNsZLVOkvva15FokABcm8ZzeOZOmuo7WoytRP/M=', 'testmail@gm
  "Alex":"test1"
  "Vitaly":"testtest"
  */
+
+insert into files (file_name, location, user_id)
+VALUES ('123.jpg', 'https://storage.yandexcloud.net/springfluxr2dbc/123.jpg',1),
+       ('222.jpg', 'https://storage.yandexcloud.net/springfluxr2dbc/222.jpg', 2),
+       ('333.jpg', 'https://storage.yandexcloud.net/springfluxr2dbc/333.jpg', 3);
+
+insert into events (user_id, file_id)
+values (1, 1),
+       (2, 2),
+       (3, 3);

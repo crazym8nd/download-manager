@@ -1,0 +1,16 @@
+version: "3"
+services:
+  db_mysql_8:
+    image: mysql:8.3.0
+    environment:
+      MYSQL_ROOT_PASSWORD: 666666
+      MYSQL_DATABASE: dl_manager
+      TZ: +3:00
+    healthcheck:
+        test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
+        timeout: 20s
+        retries: 10
+    ports:
+      - "3306:3306"
+
+
