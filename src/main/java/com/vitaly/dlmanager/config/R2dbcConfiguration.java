@@ -17,7 +17,7 @@ public class R2dbcConfiguration extends AbstractR2dbcConfiguration {
     public ConnectionFactory connectionFactory() {
         return MySqlConnectionFactory.from(
                 MySqlConnectionConfiguration.builder()
-                        .host("127.0.0.1")
+                        .host("host.docker.internal")
                         .port(3306)
                         .username("root")
                         .password("666666")

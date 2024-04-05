@@ -21,7 +21,6 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.session:spring-session-core'
     implementation 'org.springframework.boot:spring-boot-starter-data-r2dbc'
-    implementation "org.springframework.boot:spring-boot-docker-compose:${springDockerComposeVersion}"
 
 
     //mysql
@@ -65,4 +64,5 @@ dependencies {
 tasks.named('test') {
     useJUnitPlatform()
 }
+
 

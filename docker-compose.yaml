@@ -1,0 +1,30 @@
+version: "3"
+services:
+  dl_manager:
+    image: dl_manager
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8083:8083"
+    depends_on:
+      db_mysql_8:
+        condition: service_healthy
+
+  db_mysql_8:
+    image: mysql:8.3.0
+    environment:
+      MYSQL_ROOT_PASSWORD: 666666
+      MYSQL_DATABASE: dl_manager
+      MYSQL_USER: manager
+      MYSQL_PASSWORD: password
+      TZ: +3:00
+    healthcheck:
+      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
+      timeout: 20s
+      retries: 10
+    ports:
+      - "3306:3306"
+
