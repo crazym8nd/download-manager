@@ -3,7 +3,7 @@ server:
 
 spring:
   r2dbc:
-    url: r2dbc:mysql://host.docker.internal:3306/dl_manager
+    url: r2dbc:mysql://localhost:3306/dl_manager_test
     username: root
     password: 666666
   sql:

@@ -86,6 +86,14 @@ public class UserDataUtils {
 
     //Dtos
 
+    public static UserDto getUserDtoForRegistration(){
+        return UserDto.builder()
+                .username("TestUser")
+                .email("testmail@gmail.com")
+                .password("test")
+                .build();
+    }
+
     public static UserDto getFirstUserDtoTransient(){
         return UserDto.builder()
                 .username("testname")
