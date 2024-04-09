@@ -74,7 +74,7 @@ public class SecurityService {
                     }
 
                     if (!passwordEncoder.matches(password, user.getPassword())) {
-                        return Mono.error(new AuthException("Ivalid password", "INVALID_PASSWORD"));
+                        return Mono.error(new AuthException("Invalid password", "INVALID_PASSWORD"));
                     }
 
                     return Mono.just(generateToken(user).toBuilder()

@@ -13,5 +13,6 @@ public interface UserRepository extends R2dbcRepository<UserEntity, Long> {
     @Query("UPDATE users SET status = 'DELETED' WHERE id = :id")
     Mono<Void> deleteById(Long id);
 
+    Mono<Void> deleteByUsername(String username);
     Mono<UserEntity> findByUsername(String username);
 }

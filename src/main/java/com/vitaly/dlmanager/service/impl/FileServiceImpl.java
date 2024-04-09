@@ -145,7 +145,7 @@ public class FileServiceImpl implements FileService {
 
                     fileRepository.save(file)
                             .publishOn(Schedulers.boundedElastic())
-                            .flatMap(savedfile -> eventRepository.save(EventEntity
+                            .flatMap(savedFile -> eventRepository.save(EventEntity
                                     .builder()
                                     .userId(userId)
                                     .fileId(file.getId())

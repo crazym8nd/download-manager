@@ -1,5 +1,6 @@
 package com.vitaly.dlmanager.util;
 
+import com.vitaly.dlmanager.dto.AuthRequestDto;
 import com.vitaly.dlmanager.dto.UserDto;
 import com.vitaly.dlmanager.entity.Status;
 import com.vitaly.dlmanager.entity.user.UserEntity;
@@ -11,9 +12,9 @@ public class UserDataUtils {
         //Entities
     public static UserEntity getFirstUserTransient(){
         return UserEntity.builder()
-                .username("testname")
+                .username("testuser")
                 .email("testmail@gmail.com")
-                .password("test1")
+                .password("testpass")
                 .role(UserRole.USER)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
@@ -86,19 +87,11 @@ public class UserDataUtils {
 
     //Dtos
 
-    public static UserDto getUserDtoForRegistration(){
-        return UserDto.builder()
-                .username("TestUser")
-                .email("testmail@gmail.com")
-                .password("test")
-                .build();
-    }
-
     public static UserDto getFirstUserDtoTransient(){
         return UserDto.builder()
-                .username("testname")
+                .username("testuser")
                 .email("testmail@gmail.com")
-                .password("test1")
+                .password("testpass")
                 .role(UserRole.USER)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
@@ -133,9 +126,9 @@ public class UserDataUtils {
     public static UserDto getFirstUserDtoPersisted(){
         return UserDto.builder()
                 .id(1L)
-                .username("testname")
+                .username("testuser")
                 .email("testmail@gmail.com")
-                .password("test1")
+                .password("mvwAEso29ZSiJ2VckPpPvoJQ32Ht+CYCenecgiXUMjY=")
                 .role(UserRole.USER)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
@@ -168,4 +161,22 @@ public class UserDataUtils {
                 .status(Status.ACTIVE)
                 .build();
     }
+
+    //AuthRequestDto
+    public static AuthRequestDto getUserDtoForLogin(){
+        return AuthRequestDto.builder()
+                .username("testuser")
+                .password("testpass")
+                .build();
+    }
+
+    //UserDto to register
+    public static UserDto getUserDtoForRegister(){
+        return UserDto.builder()
+                .username("RegisteredUser")
+                .password("MyPassword")
+                .email("registered@mail.com")
+                .build();
+    }
+
 }
