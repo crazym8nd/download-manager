@@ -1,10 +1,11 @@
-package com.vitaly.dlmanager.rest;
+package com.vitaly.dlmanager.it;
 
 import com.vitaly.dlmanager.config.MysqlTestContainerConfig;
 import com.vitaly.dlmanager.dto.AuthRequestDto;
 import com.vitaly.dlmanager.dto.AuthResponseDto;
 import com.vitaly.dlmanager.dto.UserDto;
 import com.vitaly.dlmanager.entity.user.UserEntity;
+import com.vitaly.dlmanager.entity.user.UserRole;
 import com.vitaly.dlmanager.repository.UserRepository;
 import com.vitaly.dlmanager.util.UserDataUtils;
 import org.junit.jupiter.api.AfterEach;
@@ -50,9 +51,13 @@ public class ItAuthRestControllerV1Tests {
         user.setPassword(passwordEncoder.encode((user.getPassword())));
         userRepository.save(user).block();
     }
+    @AfterEach
+    public void tearDown() {
+        userRepository.deleteByUsername("testuser").block();
+    }
 
     @Test
-    public void givenUserDto_whenLoginUser_thenSuccessResponse() {
+    public void givenAuthRequestDto_whenLoginUser_thenSuccessResponse() {
 
         //given
         AuthRequestDto authRequestDto = UserDataUtils.getUserDtoForLogin();
@@ -78,10 +83,10 @@ public class ItAuthRestControllerV1Tests {
                 .bodyValue(userDto)
                 .exchange();
         //then
-        result.expectStatus().isOk();
+        result.expectStatus().isCreated();
     }
     @Test
-    public void givenUserDto_whenUserInfo_thenSuccessResponse() {
+    public void givenAuthRequestDto_whenUserInfo_thenSuccessResponse() {
 
         //given
         AuthRequestDto authRequestDto = UserDataUtils.getUserDtoForLogin();
@@ -107,9 +112,53 @@ public class ItAuthRestControllerV1Tests {
                     assertEquals(UserDataUtils.getFirstUserDtoPersisted().getPassword(), userDtoReturned.getPassword());
                 });
     }
+    @Test
+    public void givenAuthRequestDto_whenLoginUser_thenReturnsUnauthorized()  {
 
-    @AfterEach
-    public void tearDown() {
-        userRepository.deleteByUsername("testuser").block();
+        //given
+        AuthRequestDto authRequestDto = AuthRequestDto.builder()
+                .username("blabla")
+                .password("blabla").build();
+        //when
+        WebTestClient.ResponseSpec result = webTestClient.post().uri("/api/v1/auth/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(authRequestDto)
+                .exchange();
+        //then
+        result.expectStatus().isUnauthorized();
+    }
+    @Test
+    public void givenWrongRequest_whenRegisterUser_thenReturnsBadRequest() {
+
+        //given
+        String wrongRequest = "user" + " " + "password";
+        //when
+        WebTestClient.ResponseSpec result = webTestClient.post().uri("/api/v1/auth/register")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(wrongRequest)
+                .exchange();
+        //then
+        result.expectStatus().isBadRequest();
+    }
+
+    @Test
+    public void givenWrongRequest_whenUserInfo_thenReturnBadRequest() {
+
+        //given
+        AuthRequestDto authRequestDto = UserDataUtils.getUserDtoForLogin();
+        AuthResponseDto authResponseDto = webTestClient.post().uri("/api/v1/auth/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(Mono.just(authRequestDto), AuthRequestDto.class)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(AuthResponseDto.class)
+                .returnResult()
+                .getResponseBody();
+
+        //when
+        WebTestClient.ResponseSpec result = webTestClient.get().uri("/api/v1/auth/info")
+                .exchange();
+        //then
+        result.expectStatus().isUnauthorized();
     }
 }

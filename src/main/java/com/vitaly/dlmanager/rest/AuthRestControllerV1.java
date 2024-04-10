@@ -10,9 +10,13 @@ import com.vitaly.dlmanager.security.CustomPrincipal;
 import com.vitaly.dlmanager.security.SecurityService;
 import com.vitaly.dlmanager.service.impl.UserServiceImpl;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
+
+import java.net.http.HttpRequest;
 
 @RestController
 @RequiredArgsConstructor
@@ -24,10 +28,11 @@ public class AuthRestControllerV1 {
     private final UserMapper userMapper;
 
     @PostMapping("/register")
-    public Mono<UserDto> register(@RequestBody UserDto dto) {
+    public Mono<ResponseEntity<UserDto>> register(@RequestBody UserDto dto) {
         UserEntity entity = userMapper.map(dto);
         return userServiceImpl.save(entity)
-                .map(userMapper::map);
+                .map(savedEntity -> ResponseEntity.status(HttpStatus.CREATED).body(userMapper.map(savedEntity)))
+                .defaultIfEmpty(ResponseEntity.status(HttpStatus.BAD_REQUEST).build());
     }
 
     @PostMapping("/login")

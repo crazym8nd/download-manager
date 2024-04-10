@@ -29,6 +29,9 @@ public class PBFDK2Encoder implements PasswordEncoder {
     @Override
     public String encode(CharSequence rawPassword) {
 
+        if (rawPassword == null) {
+            throw new RuntimeException("User did not provide the password");
+        }
         try {
             byte[] result = SecretKeyFactory.getInstance(SECRET_KEY_INSTANCE)
                     .generateSecret(new PBEKeySpec(rawPassword.toString().toCharArray(),
