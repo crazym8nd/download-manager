@@ -34,9 +34,6 @@ public class ItAuthRestControllerV1Tests {
     private UserRepository userRepository;
 
     @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    @Autowired
     public void loadContext(final ApplicationContext applicationContext) {
         webTestClient = WebTestClient
                 .bindToApplicationContext(applicationContext)
@@ -47,9 +44,7 @@ public class ItAuthRestControllerV1Tests {
 
     @BeforeEach
     public void setUp() {
-        UserEntity user = UserDataUtils.getFirstUserTransient();
-        user.setPassword(passwordEncoder.encode((user.getPassword())));
-        userRepository.save(user).block();
+        userRepository.save(UserDataUtils.getFirstUserTransient()).block();
     }
     @AfterEach
     public void tearDown() {
@@ -108,8 +103,8 @@ public class ItAuthRestControllerV1Tests {
                 .expectBody(UserDto.class)
                 .consumeWith(response -> {
                     UserDto userDtoReturned = response.getResponseBody();
-                    assertEquals(UserDataUtils.getFirstUserDtoPersisted().getUsername(), userDtoReturned.getUsername());
-                    assertEquals(UserDataUtils.getFirstUserDtoPersisted().getPassword(), userDtoReturned.getPassword());
+                    assertEquals(UserDataUtils.getFirstUserTransient().getUsername(), userDtoReturned.getUsername());
+                    assertEquals(UserDataUtils.getFirstUserTransient().getPassword(), userDtoReturned.getPassword());
                 });
     }
     @Test

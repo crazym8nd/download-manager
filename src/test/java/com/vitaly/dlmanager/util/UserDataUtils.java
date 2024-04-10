@@ -5,16 +5,20 @@ import com.vitaly.dlmanager.dto.UserDto;
 import com.vitaly.dlmanager.entity.Status;
 import com.vitaly.dlmanager.entity.user.UserEntity;
 import com.vitaly.dlmanager.entity.user.UserRole;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Import;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDateTime;
 
 public class UserDataUtils {
+
         //Entities
     public static UserEntity getFirstUserTransient(){
         return UserEntity.builder()
                 .username("testuser")
                 .email("testmail@gmail.com")
-                .password("testpass")
+                .password("mvwAEso29ZSiJ2VckPpPvoJQ32Ht+CYCenecgiXUMjY=")
                 .role(UserRole.USER)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
@@ -26,7 +30,7 @@ public class UserDataUtils {
         return UserEntity.builder()
                 .username("Alex")
                 .email("alex@gmail.com")
-                .password("test1")
+                .password("af17zMKqhPzkVaIkPj5W3cjrNI3+gTaqAkZ90WnQ06w=")
                 .role(UserRole.MODERATOR)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
@@ -38,46 +42,7 @@ public class UserDataUtils {
         return UserEntity.builder()
                 .username("Vitaly")
                 .email("vitlaly@gmail.com")
-                .password("testtest")
-                .role(UserRole.ADMIN)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
-                .status(Status.ACTIVE)
-                .build();
-    }
-
-    public static UserEntity getFirstUserPersisted(){
-        return UserEntity.builder()
-                .id(1L)
-                .username("testname")
-                .email("testmail@gmail.com")
-                .password("test1")
-                .role(UserRole.USER)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
-                .status(Status.ACTIVE)
-                .build();
-    }
-
-    public static UserEntity getSecondUserPersisted(){
-        return UserEntity.builder()
-                .id(2L)
-                .username("Alex")
-                .email("alex@gmail.com")
-                .password("test1")
-                .role(UserRole.MODERATOR)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
-                .status(Status.ACTIVE)
-                .build();
-    }
-
-    public static UserEntity getThirdUserPersisted(){
-        return UserEntity.builder()
-                .id(3L)
-                .username("Vitaly")
-                .email("vitlaly@gmail.com")
-                .password("testtest")
+                .password("QvZ8ivl5zRLsJgFvNW6SvvC8qs3XnTh60FcaYInE4Wk=")
                 .role(UserRole.ADMIN)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
@@ -87,11 +52,11 @@ public class UserDataUtils {
 
     //Dtos
 
-    public static UserDto getFirstUserDtoTransient(){
+    public static UserDto getUserDtoForSaving(){
         return UserDto.builder()
-                .username("testuser")
-                .email("testmail@gmail.com")
-                .password("testpass")
+                .username("UserToSave")
+                .email("testmailtosave@gmail.com")
+                .password("testpassowrdforsave")
                 .role(UserRole.USER)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
@@ -123,46 +88,9 @@ public class UserDataUtils {
                 .build();
     }
 
-    public static UserDto getFirstUserDtoPersisted(){
-        return UserDto.builder()
-                .id(1L)
-                .username("testuser")
-                .email("testmail@gmail.com")
-                .password("mvwAEso29ZSiJ2VckPpPvoJQ32Ht+CYCenecgiXUMjY=")
-                .role(UserRole.USER)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
-                .status(Status.ACTIVE)
-                .build();
-    }
 
-    public static UserDto getSecondUserDtoPersisted(){
-        return UserDto.builder()
-                .id(2L)
-                .username("Alex")
-                .email("alex@gmail.com")
-                .password("test1")
-                .role(UserRole.MODERATOR)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
-                .status(Status.ACTIVE)
-                .build();
-    }
 
-    public static UserDto getThirdUserDtoPersisted(){
-        return UserDto.builder()
-                .id(3L)
-                .username("Vitaly")
-                .email("vitlaly@gmail.com")
-                .password("testtest")
-                .role(UserRole.ADMIN)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
-                .status(Status.ACTIVE)
-                .build();
-    }
-
-    //AuthRequestDto
+    //AuthRequestDto for auth test
     public static AuthRequestDto getUserDtoForLogin(){
         return AuthRequestDto.builder()
                 .username("testuser")
@@ -178,5 +106,20 @@ public class UserDataUtils {
                 .email("registered@mail.com")
                 .build();
     }
+    //AuthRequestDto for user
+    public static AuthRequestDto getUserModeratorDtoForLogin() {
+        return AuthRequestDto.builder()
+                .username("Alex")
+                .password("test1")
+                .build();
+    }
 
+    public static UserDto getUserDtoUpdated() {
+        return UserDto.builder()
+                .id(3L)
+                .username("UpdatedUser")
+                .password("UpdatedPassword")
+                .email("updated@mail.com")
+                .build();
+    }
 }

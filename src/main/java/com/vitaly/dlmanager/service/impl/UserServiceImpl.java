@@ -64,13 +64,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Transactional
     public Mono<UserEntity> update(UserEntity userEntity) {
-        return this.userRepository.findById(userEntity.getId())
-                .flatMap((u -> {
-                    u.setUpdatedAt(LocalDateTime.now());
-                    return this.userRepository.save(userEntity);
-                }));
+        return userRepository.save(userEntity.toBuilder()
+                        .role(userEntity.getRole() == null ? UserRole.USER : userEntity.getRole())
+                        .updatedAt(LocalDateTime.now())
+                .build());
     }
 
     @Override
@@ -78,7 +76,7 @@ public class UserServiceImpl implements UserService {
         return userRepository.save(
                 user.toBuilder()
                         .password(passwordEncoder.encode(user.getPassword()))
-                        .role(UserRole.USER)
+                        .role(user.getRole() == null ? UserRole.USER : user.getRole())
                         .status(Status.ACTIVE)
                         .createdAt(LocalDateTime.now())
                         .updatedAt(LocalDateTime.now())
