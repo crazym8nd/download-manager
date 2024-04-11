@@ -1,18 +1,27 @@
 package com.vitaly.dlmanager.it;
 
+import com.vitaly.dlmanager.config.DatabasePopulationListener;
 import com.vitaly.dlmanager.config.MysqlTestContainerConfig;
 import com.vitaly.dlmanager.dto.AuthRequestDto;
 import com.vitaly.dlmanager.dto.AuthResponseDto;
 import com.vitaly.dlmanager.dto.UserDto;
 import com.vitaly.dlmanager.entity.user.UserEntity;
+import com.vitaly.dlmanager.repository.EventRepository;
+import com.vitaly.dlmanager.repository.FileRepository;
 import com.vitaly.dlmanager.repository.UserRepository;
+import com.vitaly.dlmanager.util.EventDataUtils;
+import com.vitaly.dlmanager.util.FileDataUtils;
 import com.vitaly.dlmanager.util.UserDataUtils;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
 
@@ -24,6 +33,10 @@ import static org.springframework.security.test.web.reactive.server.SecurityMock
 
 @Import({MysqlTestContainerConfig.class})
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@TestExecutionListeners(
+        listeners = DatabasePopulationListener.class,
+        mergeMode = TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS
+)
 public class ItUserControllerV1Tests {
 
     @Autowired
@@ -31,6 +44,12 @@ public class ItUserControllerV1Tests {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private EventRepository eventRepository;
+
+    @Autowired
+    private FileRepository fileRepository;
 
     @Autowired
     public void loadContext(final ApplicationContext applicationContext) {
@@ -41,9 +60,197 @@ public class ItUserControllerV1Tests {
                 .build();
     }
 
-    //given
-    //when
-    //then
+
+
+    // admin positive scenarios
+    @Test
+    public void givenUserAdmin_whenGetAllUsers_thenSuccessResponse() {
+        //given
+        AuthRequestDto authRequestDto = UserDataUtils.getUserAdminDtoForLogin();
+        AuthResponseDto authResponseDto = prepareAuthResponseForJwt(authRequestDto);
+
+        //when
+
+        WebTestClient.ResponseSpec result = webTestClient.get().uri("/api/v1/users")
+                .header("Authorization", "Bearer " + authResponseDto.getToken())
+                .exchange();
+        //then
+        result.expectStatus().isOk()
+                .expectBodyList(UserDto.class)
+                .consumeWith(response -> {
+                    List<UserDto> userDtoList = response.getResponseBody();
+                    List<UserEntity> users = userRepository.findAll().collectList().block();
+                    assertNotNull(userDtoList);
+                    assertEquals(users.size(), userDtoList.size());
+                });
+    }
+
+
+    @Test
+    public void givenUserAdmin_whenGetUserById_thenSuccessResponse() {
+        //given
+        AuthRequestDto authRequestDto = UserDataUtils.getUserAdminDtoForLogin();
+        AuthResponseDto authResponseDto = prepareAuthResponseForJwt(authRequestDto);
+
+        //when
+
+        WebTestClient.ResponseSpec result = webTestClient.get().uri("/api/v1/users/1")
+                .header("Authorization", "Bearer " + authResponseDto.getToken())
+                .exchange();
+        //then
+        result.expectStatus().is2xxSuccessful()
+                .expectBody(UserDto.class)
+                .consumeWith(response -> {
+                    UserDto userDto = response.getResponseBody();
+                    assertNotNull(userDto);
+                    assertNotNull(userDto.getEvents());
+                    assertEquals(1L, userDto.getId());
+                });
+    }
+    @Test
+    public void givenUserAdmin_whenCreateUser_thenSuccessResponse() {
+        //given
+        AuthRequestDto authRequestDto = UserDataUtils.getUserAdminDtoForLogin();
+        AuthResponseDto authResponseDto = prepareAuthResponseForJwt(authRequestDto);
+
+        UserDto newUser = UserDataUtils.getUserDtoForSavingByAdmin();
+
+        //when
+        WebTestClient.ResponseSpec result = webTestClient.post().uri("/api/v1/users")
+                .header("Authorization", "Bearer " + authResponseDto.getToken())
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(Mono.just(newUser), UserDto.class)
+                .exchange();
+
+        //then
+        result.expectStatus().isCreated()
+                .expectBody(UserDto.class)
+                .consumeWith(response -> {
+                    UserDto createdUser = response.getResponseBody();
+                    assertNotNull(createdUser);
+                    assertNotNull(createdUser.getId());
+                    assertEquals(newUser.getUsername(), createdUser.getUsername());
+                });
+    }
+    @Test
+    public void givenUserAdmin_whenUpdateUser_thenSuccessResponse() {
+        //given
+        AuthRequestDto authRequestDto = UserDataUtils.getUserAdminDtoForLogin();
+        AuthResponseDto authResponseDto = prepareAuthResponseForJwt(authRequestDto);
+
+        UserDto updateUser = UserDataUtils.getUserDtoUpdated();
+
+        //when
+        WebTestClient.ResponseSpec result = webTestClient.put().uri("/api/v1/users/{id}", updateUser.getId())
+                .header("Authorization", "Bearer " + authResponseDto.getToken())
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(Mono.just(updateUser), UserDto.class)
+                .exchange();
+
+        //then
+        result.expectStatus().isOk()
+                .expectBody(UserDto.class)
+                .consumeWith(response -> {
+                    UserDto updatedUser = response.getResponseBody();
+                    assertNotNull(updatedUser);
+                    assertEquals(updateUser.getUsername(), updatedUser.getUsername());
+                });
+    }
+
+    @Test
+    public void givenUserAdmin_whenDeleteUser_thenSuccessResponse() {
+        //given
+        AuthRequestDto authRequestDto = UserDataUtils.getUserAdminDtoForLogin();
+        AuthResponseDto authResponseDto = prepareAuthResponseForJwt(authRequestDto);
+        Long userId = userRepository.save(UserDataUtils.getUserToBeDeletedByAdminTransient()).block().getId();
+
+        //when
+        WebTestClient.ResponseSpec result = webTestClient.delete().uri("/api/v1/users/{id}", userId)
+                .header("Authorization", "Bearer " + authResponseDto.getToken())
+                .exchange();
+
+        //then
+        result.expectStatus().isOk();
+    }
+    //moderator negative scenario
+    public void givenUserAdmin_whenGetAllUsers_thenReturnBadRequest() {
+        //given
+        AuthRequestDto authRequestDto = UserDataUtils.getUserAdminDtoForLogin();
+        AuthResponseDto authResponseDto = prepareAuthResponseForJwt(authRequestDto);
+
+        //when
+
+        WebTestClient.ResponseSpec result = webTestClient.get().uri("/api/v1/user/all")
+                .header("Authorization", "Bearer " + authResponseDto.getToken())
+                .exchange();
+        //then
+        result.expectStatus().isBadRequest();
+    }
+
+    @Test
+    public void givenUserAdmin_whenGetUserById_thenReturnNoContent() {
+        //given
+        AuthRequestDto authRequestDto = UserDataUtils.getUserAdminDtoForLogin();
+        AuthResponseDto authResponseDto = prepareAuthResponseForJwt(authRequestDto);
+
+        //when
+
+        WebTestClient.ResponseSpec result = webTestClient.get().uri("/api/v1/users/999")
+                .header("Authorization", "Bearer " + authResponseDto.getToken())
+                .exchange();
+        //then
+        result.expectStatus().isNoContent();
+    }
+    @Test
+    public void givenUserAdmin_whenCreateUser_thenReturnBadRequest() {
+        //given
+        AuthRequestDto authRequestDto = UserDataUtils.getUserAdminDtoForLogin();
+        AuthResponseDto authResponseDto = prepareAuthResponseForJwt(authRequestDto);
+
+        //when
+        WebTestClient.ResponseSpec result = webTestClient.post().uri("/api/v1/users")
+                .header("Authorization", "Bearer " + authResponseDto.getToken())
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(Mono.just("newUser" + " " + "newPassword"), String.class)
+                .exchange();
+
+        //then
+        result.expectStatus().isBadRequest();
+    }
+    @Test
+    public void givenUserAdmin_whenUpdateUser_thenReturnBadRequest() {
+        //given
+        AuthRequestDto authRequestDto = UserDataUtils.getUserAdminDtoForLogin();
+        AuthResponseDto authResponseDto = prepareAuthResponseForJwt(authRequestDto);
+
+        //when
+        WebTestClient.ResponseSpec result = webTestClient.put().uri("/api/v1/users/1")
+                .header("Authorization", "Bearer " + authResponseDto.getToken())
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(Mono.just("changeUser" + " " + "changePassword"), String.class)
+                .exchange();
+
+        //then
+        result.expectStatus().isBadRequest();
+    }
+
+    @Test
+    public void givenUserAdmin_whenDeleteUser_thenReturnNoContent() {
+        //given
+        AuthRequestDto authRequestDto = UserDataUtils.getUserAdminDtoForLogin();
+        AuthResponseDto authResponseDto = prepareAuthResponseForJwt(authRequestDto);
+
+        Long userIdToDelete = 9999L;
+
+        //when
+        WebTestClient.ResponseSpec result = webTestClient.delete().uri("/api/v1/users/{id}", userIdToDelete)
+                .header("Authorization", "Bearer " + authResponseDto.getToken())
+                .exchange();
+
+        //then
+        result.expectStatus().is2xxSuccessful();
+    }
+
 
     private AuthResponseDto prepareAuthResponseForJwt(AuthRequestDto authRequestDto) {
         return webTestClient.post().uri("/api/v1/auth/login")
@@ -106,7 +313,7 @@ public class ItUserControllerV1Tests {
         AuthRequestDto authRequestDto = UserDataUtils.getUserModeratorDtoForLogin();
         AuthResponseDto authResponseDto = prepareAuthResponseForJwt(authRequestDto);
 
-        UserDto newUser = UserDataUtils.getUserDtoForSaving();
+        UserDto newUser = UserDataUtils.getUserDtoForSavingByMod();
 
         //when
         WebTestClient.ResponseSpec result = webTestClient.post().uri("/api/v1/users")
@@ -156,7 +363,7 @@ public class ItUserControllerV1Tests {
         AuthRequestDto authRequestDto = UserDataUtils.getUserModeratorDtoForLogin();
         AuthResponseDto authResponseDto = prepareAuthResponseForJwt(authRequestDto);
 
-        Long userIdToDelete = 3L;
+        Long userIdToDelete = userRepository.save(UserDataUtils.getUserToBeDeletedByModTransient()).block().getId();
 
         //when
         WebTestClient.ResponseSpec result = webTestClient.delete().uri("/api/v1/users/{id}", userIdToDelete)
@@ -207,7 +414,7 @@ public class ItUserControllerV1Tests {
         AuthRequestDto authRequestDto = UserDataUtils.getUserDtoForLogin();
         AuthResponseDto authResponseDto = prepareAuthResponseForJwt(authRequestDto);
 
-        UserDto newUser = UserDataUtils.getUserDtoForSaving();
+        UserDto newUser = UserDataUtils.getUserDtoUpdated();
 
         //when
         WebTestClient.ResponseSpec result = webTestClient.post().uri("/api/v1/users")
@@ -245,7 +452,7 @@ public class ItUserControllerV1Tests {
         AuthRequestDto authRequestDto = UserDataUtils.getUserDtoForLogin();
         AuthResponseDto authResponseDto = prepareAuthResponseForJwt(authRequestDto);
 
-        Long userIdToDelete = 2L;
+        Long userIdToDelete = 1L;
 
         //when
         WebTestClient.ResponseSpec result = webTestClient.delete().uri("/api/v1/users/{id}", userIdToDelete)

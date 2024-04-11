@@ -1,5 +1,6 @@
 package com.vitaly.dlmanager.it;
 
+import com.vitaly.dlmanager.config.DatabasePopulationListener;
 import com.vitaly.dlmanager.config.MysqlTestContainerConfig;
 import com.vitaly.dlmanager.dto.AuthRequestDto;
 import com.vitaly.dlmanager.dto.AuthResponseDto;
@@ -10,15 +11,13 @@ import com.vitaly.dlmanager.repository.UserRepository;
 import com.vitaly.dlmanager.util.EventDataUtils;
 import com.vitaly.dlmanager.util.FileDataUtils;
 import com.vitaly.dlmanager.util.UserDataUtils;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
 
@@ -30,7 +29,10 @@ import static org.springframework.security.test.web.reactive.server.SecurityMock
 
 @Import({MysqlTestContainerConfig.class})
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@TestExecutionListeners(
+        listeners = DatabasePopulationListener.class,
+        mergeMode = TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS
+)
 public class ItAuthRestControllerV1Tests {
     @Autowired
     private WebTestClient webTestClient;
@@ -52,28 +54,7 @@ public class ItAuthRestControllerV1Tests {
                 .configureClient()
                 .build();
     }
-
-    @BeforeAll
-    public void setUp() {
-        userRepository.saveAll(List.of(UserDataUtils.getFirstUserTransient(),
-                        UserDataUtils.getSecondUserTransient(),
-                        UserDataUtils.getThirdUserTransient()))
-                .blockLast();
-
-        fileRepository.saveAll(List.of(FileDataUtils.getFirstFileTransient(),
-                        FileDataUtils.getSecondFileTransient(),
-                        FileDataUtils.getThirdFileTransient(),
-                        FileDataUtils.getFileForEventSaveTestTransient()))
-                .blockLast();
-
-        eventRepository.saveAll(List.of(EventDataUtils.getFirstEventTransient(),
-                        EventDataUtils.getSecondEventTransient(),
-                        EventDataUtils.getThirdEventTransient()))
-                .blockLast();
-    }
-
     @Test
-    @Order(1)
     public void givenAuthRequestDto_whenLoginUser_thenSuccessResponse() {
 
         //given

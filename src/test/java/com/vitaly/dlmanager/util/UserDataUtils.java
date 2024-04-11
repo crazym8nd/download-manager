@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 
 public class UserDataUtils {
 
-        //Entities
+    //Entities
     public static UserEntity getFirstUserTransient(){
         return UserEntity.builder()
                 .username("testuser")
@@ -46,14 +46,47 @@ public class UserDataUtils {
                 .status(Status.ACTIVE)
                 .build();
     }
+    public static UserEntity getUserToBeDeletedByAdminTransient(){
+        return UserEntity.builder()
+                .username("UserWIllbedeletedbyAdmin")
+                .email("doesntmatter@gmail.com")
+                .password("qqq")
+                .role(UserRole.USER)
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .status(Status.ACTIVE)
+                .build();
+    }
+    public static UserEntity getUserToBeDeletedByModTransient() {
+        return UserEntity.builder()
+                .username("userToBeDeletedByMod")
+                .email("nochanse@gmail.com")
+                .password("qeqeqqeqe")
+                .role(UserRole.USER)
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .status(Status.ACTIVE)
+                .build();
+    }
 
     //Dtos
 
-    public static UserDto getUserDtoForSaving(){
+    public static UserDto getUserDtoForSavingByAdmin(){
         return UserDto.builder()
-                .username("UserToSave")
-                .email("testmailtosave@gmail.com")
-                .password("testpassowrdforsave")
+                .username("UserToSaveByAdmin")
+                .email("testmailtosaveadmin@gmail.com")
+                .password("testrdforsave")
+                .role(UserRole.USER)
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .status(Status.ACTIVE)
+                .build();
+    }
+    public static UserDto getUserDtoForSavingByMod(){
+        return UserDto.builder()
+                .username("UserToSaveByMod")
+                .email("testmailtosavebyMod@gmail.com")
+                .password("testpassowrda")
                 .role(UserRole.USER)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
@@ -85,12 +118,22 @@ public class UserDataUtils {
                 .build();
     }
 
+    public static AuthRequestDto getUserAdminDtoForLogin() {
+        return AuthRequestDto.builder()
+                .username("Vitaly")
+                .password("testtest")
+                .build();
+    }
+
+
     public static UserDto getUserDtoUpdated() {
         return UserDto.builder()
-                .id(3L)
+                .id(4L)
                 .username("UpdatedUser")
                 .password("UpdatedPassword")
                 .email("updated@mail.com")
                 .build();
     }
+
+
 }

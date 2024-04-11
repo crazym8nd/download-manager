@@ -73,6 +73,7 @@ create table if not exists files
     constraint fk_files_user_id
         foreign key
             (user_id) references users (id)
+            ON DELETE CASCADE
 );
 
 create table if not exists events
@@ -120,7 +121,7 @@ create table if not exists events
                 ) references users
             (
              id
-                ),
+                )ON DELETE CASCADE,
     constraint fk_events_file_id
         foreign key
             (
@@ -128,5 +129,5 @@ create table if not exists events
                 ) references files
             (
              id
-                )
+                ) ON DELETE CASCADE
 );

@@ -1,5 +1,6 @@
 package com.vitaly.dlmanager.it;
 
+import com.vitaly.dlmanager.config.DatabasePopulationListener;
 import com.vitaly.dlmanager.config.MysqlTestContainerConfig;
 import com.vitaly.dlmanager.dto.AuthRequestDto;
 import com.vitaly.dlmanager.dto.AuthResponseDto;
@@ -9,13 +10,18 @@ import com.vitaly.dlmanager.repository.EventRepository;
 import com.vitaly.dlmanager.repository.FileRepository;
 import com.vitaly.dlmanager.repository.UserRepository;
 import com.vitaly.dlmanager.util.EventDataUtils;
+import com.vitaly.dlmanager.util.FileDataUtils;
 import com.vitaly.dlmanager.util.UserDataUtils;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
 
@@ -48,8 +54,6 @@ public class ItEventControllerV1Tests {
                 .configureClient()
                 .build();
     }
-
-
 
     private AuthResponseDto prepareAuthResponseForJwt(AuthRequestDto authRequestDto) {
         return webTestClient.post().uri("/api/v1/auth/login")
