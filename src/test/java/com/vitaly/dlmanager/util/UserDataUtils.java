@@ -5,9 +5,6 @@ import com.vitaly.dlmanager.dto.UserDto;
 import com.vitaly.dlmanager.entity.Status;
 import com.vitaly.dlmanager.entity.user.UserEntity;
 import com.vitaly.dlmanager.entity.user.UserRole;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Import;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDateTime;
 
@@ -63,32 +60,6 @@ public class UserDataUtils {
                 .status(Status.ACTIVE)
                 .build();
     }
-
-    public static UserDto getSecondUserDtoTransient(){
-        return UserDto.builder()
-                .username("Alex")
-                .email("alex@gmail.com")
-                .password("test1")
-                .role(UserRole.MODERATOR)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
-                .status(Status.ACTIVE)
-                .build();
-    }
-
-    public static UserDto getThirdUserDtoTransient(){
-        return UserDto.builder()
-                .username("Vitaly")
-                .email("vitlaly@gmail.com")
-                .password("testtest")
-                .role(UserRole.ADMIN)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
-                .status(Status.ACTIVE)
-                .build();
-    }
-
-
 
     //AuthRequestDto for auth test
     public static AuthRequestDto getUserDtoForLogin(){

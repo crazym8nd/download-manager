@@ -69,17 +69,16 @@ public class EventServiceImpl implements EventService {
     @Override
     @Transactional
     public Mono<EventEntity> update(EventEntity eventEntity) {
-        return this.eventRepository.findById(eventEntity.getId())
-                .flatMap((e -> {
-                    e.setUpdatedAt(LocalDateTime.now());
-                    return this.eventRepository.save(eventEntity);
-                }));
+        return eventRepository.save(EventEntity.builder()
+                        .id(eventEntity.getId())
+                .updatedAt(LocalDateTime.now())
+                .build());
     }
 
     @Override
     public Mono<EventEntity> save(EventEntity eventEntity) {
-        return eventRepository.save(eventEntity
-        ).doOnSuccess(e -> log.info("IN createEvent - event {} crated", e));
+        return eventRepository.save(eventEntity)
+                .doOnSuccess(e -> log.info("IN createEvent - event {} crated", e));
     }
 
     @Override
@@ -88,12 +87,6 @@ public class EventServiceImpl implements EventService {
                 .findById(id)
                 .flatMap(e ->
                         this.eventRepository.deleteById(e.getId()).thenReturn(e));
-    }
-
-    public Mono<Boolean> userHasEvent(Long userId, Long eventId){
-        return this.eventRepository.findById(eventId)
-                .map(eventEntity -> eventEntity.getUserId().equals(userId))
-                .defaultIfEmpty(false);
     }
 
 }

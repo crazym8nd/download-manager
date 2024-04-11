@@ -16,8 +16,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
-import java.net.http.HttpRequest;
-
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/auth")

@@ -4,21 +4,25 @@ import com.vitaly.dlmanager.config.MysqlTestContainerConfig;
 import com.vitaly.dlmanager.dto.AuthRequestDto;
 import com.vitaly.dlmanager.dto.AuthResponseDto;
 import com.vitaly.dlmanager.dto.UserDto;
-import com.vitaly.dlmanager.entity.user.UserEntity;
-import com.vitaly.dlmanager.entity.user.UserRole;
+import com.vitaly.dlmanager.repository.EventRepository;
+import com.vitaly.dlmanager.repository.FileRepository;
 import com.vitaly.dlmanager.repository.UserRepository;
+import com.vitaly.dlmanager.util.EventDataUtils;
+import com.vitaly.dlmanager.util.FileDataUtils;
 import com.vitaly.dlmanager.util.UserDataUtils;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.springSecurity;
@@ -26,12 +30,19 @@ import static org.springframework.security.test.web.reactive.server.SecurityMock
 
 @Import({MysqlTestContainerConfig.class})
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class ItAuthRestControllerV1Tests {
     @Autowired
     private WebTestClient webTestClient;
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private EventRepository eventRepository;
+
+    @Autowired
+    private FileRepository fileRepository;
 
     @Autowired
     public void loadContext(final ApplicationContext applicationContext) {
@@ -42,16 +53,27 @@ public class ItAuthRestControllerV1Tests {
                 .build();
     }
 
-    @BeforeEach
+    @BeforeAll
     public void setUp() {
-        userRepository.save(UserDataUtils.getFirstUserTransient()).block();
-    }
-    @AfterEach
-    public void tearDown() {
-        userRepository.deleteByUsername("testuser").block();
+        userRepository.saveAll(List.of(UserDataUtils.getFirstUserTransient(),
+                        UserDataUtils.getSecondUserTransient(),
+                        UserDataUtils.getThirdUserTransient()))
+                .blockLast();
+
+        fileRepository.saveAll(List.of(FileDataUtils.getFirstFileTransient(),
+                        FileDataUtils.getSecondFileTransient(),
+                        FileDataUtils.getThirdFileTransient(),
+                        FileDataUtils.getFileForEventSaveTestTransient()))
+                .blockLast();
+
+        eventRepository.saveAll(List.of(EventDataUtils.getFirstEventTransient(),
+                        EventDataUtils.getSecondEventTransient(),
+                        EventDataUtils.getThirdEventTransient()))
+                .blockLast();
     }
 
     @Test
+    @Order(1)
     public void givenAuthRequestDto_whenLoginUser_thenSuccessResponse() {
 
         //given

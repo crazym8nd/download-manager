@@ -40,39 +40,6 @@ public class EventDataUtils {
                 .build();
     }
 
-    public static EventEntity getFirstEventPersisted(){
-        return EventEntity.builder()
-                .id(1L)
-                .userId(1L)
-                .fileId(1L)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
-                .status(Status.ACTIVE)
-                .build();
-    }
-
-    public static EventEntity getSecondEventPersisted(){
-        return EventEntity.builder()
-                .id(2L)
-                .userId(2L)
-                .fileId(2L)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
-                .status(Status.ACTIVE)
-                .build();
-    }
-
-    public static EventEntity getThirdEventPersisted(){
-        return EventEntity.builder()
-                .id(3L)
-                .userId(3L)
-                .fileId(3L)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
-                .status(Status.ACTIVE)
-                .build();
-    }
-
     //EventDtos
     public static EventDto getFirstEventDtoTransient(){
         return EventDto.builder()
@@ -104,38 +71,24 @@ public class EventDataUtils {
                 .build();
     }
 
-    public static EventDto getFirstEventDtoPersisted(){
+    public static EventDto getEventDtoForSaving() {
         return EventDto.builder()
-                .id(1L)
                 .userId(1L)
-                .fileId(1L)
+                .fileId(4L)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .status(Status.ACTIVE)
                 .build();
     }
 
-    public static EventDto getSecondEventDtoPersisted(){
+    public static EventDto getEventForUpdate() {
         return EventDto.builder()
-                .id(2L)
-                .userId(2L)
-                .fileId(2L)
+                .userId(1L)
+                .fileId(4L)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .status(Status.ACTIVE)
                 .build();
     }
-
-    public static EventDto getThirdEventDtoPersisted(){
-        return EventDto.builder()
-                .id(3L)
-                .userId(3L)
-                .fileId(3L)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
-                .status(Status.ACTIVE)
-                .build();
-    }
-
 }
 

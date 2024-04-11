@@ -40,6 +40,17 @@ public class FileDataUtils {
                 .userId(1L)
                 .build();
     }
+    public static FileEntity getFileForEventSaveTestTransient(){
+        return FileEntity.builder()
+                .fileName("444.jpg")
+                .location("https://storage.yandexcloud.net/springfluxr2dbc/444.jpg")
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .status(Status.ACTIVE)
+                .userId(1L)
+                .build();
+    }
+
 
     public static FileEntity getFirstFilePersisted(){
         return FileEntity.builder()
