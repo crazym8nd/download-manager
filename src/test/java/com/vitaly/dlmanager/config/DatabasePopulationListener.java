@@ -30,7 +30,11 @@ public class DatabasePopulationListener extends DependencyInjectionTestExecution
         fileRepository.saveAll(List.of(FileDataUtils.getFirstFileTransient(),
                         FileDataUtils.getSecondFileTransient(),
                         FileDataUtils.getThirdFileTransient(),
-                        FileDataUtils.getFileForEventSaveTestTransient()))
+                        FileDataUtils.getFileForUserEventSaveTestTransient(),
+                        FileDataUtils.getFileForModeratorEventSaveTestTransient(),
+                        FileDataUtils.getFileForAdminEventSaveTestTransient(),
+                        FileDataUtils.getFileForModEventDeleteTestTransient(),
+                        FileDataUtils.getFileForDminEventDeleteTestTransient()))
                 .blockLast();
 
         eventRepository.saveAll(List.of(EventDataUtils.getFirstEventTransient(),

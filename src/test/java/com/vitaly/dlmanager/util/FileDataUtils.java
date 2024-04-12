@@ -40,7 +40,7 @@ public class FileDataUtils {
                 .userId(1L)
                 .build();
     }
-    public static FileEntity getFileForEventSaveTestTransient(){
+    public static FileEntity getFileForUserEventSaveTestTransient(){
         return FileEntity.builder()
                 .fileName("444.jpg")
                 .location("https://storage.yandexcloud.net/springfluxr2dbc/444.jpg")
@@ -50,41 +50,44 @@ public class FileDataUtils {
                 .userId(1L)
                 .build();
     }
-
-
-    public static FileEntity getFirstFilePersisted(){
+    public static FileEntity getFileForModeratorEventSaveTestTransient(){
         return FileEntity.builder()
-                .id(1L)
-                .fileName("123.jpg")
-                .location("https://storage.yandexcloud.net/springfluxr2dbc/123.jpg")
+                .fileName("555.jpg")
+                .location("https://storage.yandexcloud.net/springfluxr2dbc/555.jpg")
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .status(Status.ACTIVE)
-                .userId(1L)
+                .userId(2L)
                 .build();
     }
-
-    public static FileEntity getSecondFilePersisted(){
+    public static FileEntity getFileForAdminEventSaveTestTransient(){
         return FileEntity.builder()
-                .id(2L)
-                .fileName("222.jpg")
-                .location("https://storage.yandexcloud.net/springfluxr2dbc/222.jpg")
+                .fileName("666.jpg")
+                .location("https://storage.yandexcloud.net/springfluxr2dbc/666.jpg")
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .status(Status.ACTIVE)
-                .userId(1L)
+                .userId(3L)
                 .build();
     }
-
-    public static FileEntity getThirdFilePersisted(){
+    public static FileEntity getFileForModEventDeleteTestTransient(){
         return FileEntity.builder()
-                .id(3L)
-                .fileName("333.jpg")
-                .location("https://storage.yandexcloud.net/springfluxr2dbc/333.jpg")
+                .fileName("777.jpg")
+                .location("https://storage.yandexcloud.net/springfluxr2dbc/777.jpg")
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .status(Status.ACTIVE)
-                .userId(1L)
+                .userId(2L)
+                .build();
+    }
+    public static FileEntity getFileForDminEventDeleteTestTransient(){
+        return FileEntity.builder()
+                .fileName("888.jpg")
+                .location("https://storage.yandexcloud.net/springfluxr2dbc/888.jpg")
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .status(Status.ACTIVE)
+                .userId(3L)
                 .build();
     }
 
@@ -123,39 +126,4 @@ public class FileDataUtils {
                 .build();
     }
 
-    public static FileDto getFirstFileDtoPersisted(){
-        return FileDto.builder()
-                .id(1L)
-                .fileName("123.jpg")
-                .location("https://storage.yandexcloud.net/springfluxr2dbc/123.jpg")
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
-                .status(Status.ACTIVE)
-                .userId(1L)
-                .build();
-    }
-
-    public static FileDto getSecondFileDtoPersisted(){
-        return FileDto.builder()
-                .id(2L)
-                .fileName("222.jpg")
-                .location("https://storage.yandexcloud.net/springfluxr2dbc/222.jpg")
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
-                .status(Status.ACTIVE)
-                .userId(1L)
-                .build();
-    }
-
-    public static FileDto getThirdFileDtoPersisted(){
-        return FileDto.builder()
-                .id(3L)
-                .fileName("333.jpg")
-                .location("https://storage.yandexcloud.net/springfluxr2dbc/333.jpg")
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
-                .status(Status.ACTIVE)
-                .userId(1L)
-                .build();
-    }
 }

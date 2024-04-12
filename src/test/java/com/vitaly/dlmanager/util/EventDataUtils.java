@@ -71,10 +71,28 @@ public class EventDataUtils {
                 .build();
     }
 
-    public static EventDto getEventDtoForSaving() {
+    public static EventDto getEventDtoForSavingByUser() {
         return EventDto.builder()
                 .userId(1L)
                 .fileId(4L)
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .status(Status.ACTIVE)
+                .build();
+    }
+    public static EventDto getEventDtoForSavingByModerator() {
+        return EventDto.builder()
+                .userId(2L)
+                .fileId(5L)
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .status(Status.ACTIVE)
+                .build();
+    }
+    public static EventDto getEventDtoForSavingByAdmin() {
+        return EventDto.builder()
+                .userId(3L)
+                .fileId(6L)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .status(Status.ACTIVE)
@@ -85,6 +103,24 @@ public class EventDataUtils {
         return EventDto.builder()
                 .userId(1L)
                 .fileId(4L)
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .status(Status.ACTIVE)
+                .build();
+    }
+    public static EventEntity getEventForDeleteByAdmin() {
+        return EventEntity.builder()
+                .userId(3L)
+                .fileId(8L)
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .status(Status.ACTIVE)
+                .build();
+    }
+    public static EventEntity getEventForDeleteByModerator() {
+        return EventEntity.builder()
+                .userId(1L)
+                .fileId(7L)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .status(Status.ACTIVE)

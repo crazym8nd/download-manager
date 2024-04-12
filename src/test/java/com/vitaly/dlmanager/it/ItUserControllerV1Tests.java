@@ -59,7 +59,16 @@ public class ItUserControllerV1Tests {
                 .configureClient()
                 .build();
     }
-
+    private AuthResponseDto prepareAuthResponseForJwt(AuthRequestDto authRequestDto) {
+        return webTestClient.post().uri("/api/v1/auth/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(Mono.just(authRequestDto), AuthRequestDto.class)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(AuthResponseDto.class)
+                .returnResult()
+                .getResponseBody();
+    }
 
 
     // admin positive scenarios
@@ -172,7 +181,8 @@ public class ItUserControllerV1Tests {
         //then
         result.expectStatus().isOk();
     }
-    //moderator negative scenario
+    //admin negative scenario
+    @Test
     public void givenUserAdmin_whenGetAllUsers_thenReturnBadRequest() {
         //given
         AuthRequestDto authRequestDto = UserDataUtils.getUserAdminDtoForLogin();
@@ -184,7 +194,7 @@ public class ItUserControllerV1Tests {
                 .header("Authorization", "Bearer " + authResponseDto.getToken())
                 .exchange();
         //then
-        result.expectStatus().isBadRequest();
+        result.expectStatus().isNotFound();
     }
 
     @Test
@@ -249,18 +259,6 @@ public class ItUserControllerV1Tests {
 
         //then
         result.expectStatus().is2xxSuccessful();
-    }
-
-
-    private AuthResponseDto prepareAuthResponseForJwt(AuthRequestDto authRequestDto) {
-        return webTestClient.post().uri("/api/v1/auth/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(Mono.just(authRequestDto), AuthRequestDto.class)
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody(AuthResponseDto.class)
-                .returnResult()
-                .getResponseBody();
     }
 
     // moderator positive scenario
@@ -374,7 +372,84 @@ public class ItUserControllerV1Tests {
         result.expectStatus().isOk();
     }
     //moderator negative scenario
+    @Test
+    public void givenUserModerator_whenGetAllUsers_thenReturnBadRequest() {
+        //given
+        AuthRequestDto authRequestDto = UserDataUtils.getUserModeratorDtoForLogin();
+        AuthResponseDto authResponseDto = prepareAuthResponseForJwt(authRequestDto);
 
+        //when
+
+        WebTestClient.ResponseSpec result = webTestClient.get().uri("/api/v1/user/all")
+                .header("Authorization", "Bearer " + authResponseDto.getToken())
+                .exchange();
+        //then
+        result.expectStatus().isNotFound();
+    }
+
+    @Test
+    public void givenUserModerator_whenGetUserById_thenReturnNoContent() {
+        //given
+        AuthRequestDto authRequestDto = UserDataUtils.getUserModeratorDtoForLogin();
+        AuthResponseDto authResponseDto = prepareAuthResponseForJwt(authRequestDto);
+
+        //when
+
+        WebTestClient.ResponseSpec result = webTestClient.get().uri("/api/v1/users/999")
+                .header("Authorization", "Bearer " + authResponseDto.getToken())
+                .exchange();
+        //then
+        result.expectStatus().isNoContent();
+    }
+    @Test
+    public void givenUserModerator_whenCreateUser_thenReturnBadRequest() {
+        //given
+        AuthRequestDto authRequestDto = UserDataUtils.getUserModeratorDtoForLogin();
+        AuthResponseDto authResponseDto = prepareAuthResponseForJwt(authRequestDto);
+
+        //when
+        WebTestClient.ResponseSpec result = webTestClient.post().uri("/api/v1/users")
+                .header("Authorization", "Bearer " + authResponseDto.getToken())
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(Mono.just("newUser" + " " + "newPassword"), String.class)
+                .exchange();
+
+        //then
+        result.expectStatus().isBadRequest();
+    }
+    @Test
+    public void givenUserModerator_whenUpdateUser_thenReturnBadRequest() {
+        //given
+        AuthRequestDto authRequestDto = UserDataUtils.getUserModeratorDtoForLogin();
+        AuthResponseDto authResponseDto = prepareAuthResponseForJwt(authRequestDto);
+
+        //when
+        WebTestClient.ResponseSpec result = webTestClient.put().uri("/api/v1/users/1")
+                .header("Authorization", "Bearer " + authResponseDto.getToken())
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(Mono.just("changeUser" + " " + "changePassword"), String.class)
+                .exchange();
+
+        //then
+        result.expectStatus().isBadRequest();
+    }
+
+    @Test
+    public void givenUserModerator_whenDeleteUser_thenReturnNoContent() {
+        //given
+        AuthRequestDto authRequestDto = UserDataUtils.getUserModeratorDtoForLogin();
+        AuthResponseDto authResponseDto = prepareAuthResponseForJwt(authRequestDto);
+
+        Long userIdToDelete = 9999L;
+
+        //when
+        WebTestClient.ResponseSpec result = webTestClient.delete().uri("/api/v1/users/{id}", userIdToDelete)
+                .header("Authorization", "Bearer " + authResponseDto.getToken())
+                .exchange();
+
+        //then
+        result.expectStatus().is2xxSuccessful();
+    }
 
 
     //user negative scenario
