@@ -6,7 +6,6 @@ import com.vitaly.dlmanager.repository.UserRepository;
 import com.vitaly.dlmanager.util.EventDataUtils;
 import com.vitaly.dlmanager.util.FileDataUtils;
 import com.vitaly.dlmanager.util.UserDataUtils;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.test.context.TestContext;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 

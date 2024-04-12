@@ -91,39 +91,4 @@ public class FileDataUtils {
                 .build();
     }
 
-    //Dto
-
-    public static FileDto getFirstFileDtoTransient(){
-        return FileDto.builder()
-                .fileName("123.jpg")
-                .location("https://storage.yandexcloud.net/springfluxr2dbc/123.jpg")
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
-                .status(Status.ACTIVE)
-                .userId(1L)
-                .build();
-    }
-
-    public static FileDto getSecondFileDtoTransient(){
-        return FileDto.builder()
-                .fileName("222.jpg")
-                .location("https://storage.yandexcloud.net/springfluxr2dbc/222.jpg")
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
-                .status(Status.ACTIVE)
-                .userId(1L)
-                .build();
-    }
-
-    public static FileDto getThirdFileDtoTransient(){
-        return FileDto.builder()
-                .fileName("333.jpg")
-                .location("https://storage.yandexcloud.net/springfluxr2dbc/333.jpg")
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
-                .status(Status.ACTIVE)
-                .userId(1L)
-                .build();
-    }
-
 }

@@ -8,10 +8,8 @@ import com.vitaly.dlmanager.dto.UserDto;
 import com.vitaly.dlmanager.repository.EventRepository;
 import com.vitaly.dlmanager.repository.FileRepository;
 import com.vitaly.dlmanager.repository.UserRepository;
-import com.vitaly.dlmanager.util.EventDataUtils;
-import com.vitaly.dlmanager.util.FileDataUtils;
 import com.vitaly.dlmanager.util.UserDataUtils;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
@@ -20,8 +18,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
-
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.springSecurity;
