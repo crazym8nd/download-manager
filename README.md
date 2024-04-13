@@ -46,6 +46,6 @@ Access levels and rights:
 * AWS SDK
 * Amazon AWS S3
 * Docker
+* TestContainers
 * LocalStack
-
 
