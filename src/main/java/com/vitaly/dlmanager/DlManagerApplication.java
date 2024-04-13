@@ -9,5 +9,4 @@ public class DlManagerApplication {
     public static void main(String[] args) {
         SpringApplication.run(DlManagerApplication.class, args);
     }
-    //TODO сделать тесты интеграционный с реальными хождениями в бд через тест контейнеры
 }

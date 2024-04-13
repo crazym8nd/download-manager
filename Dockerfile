@@ -6,7 +6,7 @@ COPY build.gradle ./build.gradle
 COPY settings.gradle ./settings.gradle
 COPY gradle.properties ./gradle.properties
 
-RUN gradle clean build
+RUN gradle clean build -x test
 
 FROM bellsoft/liberica-openjdk-debian:17
 

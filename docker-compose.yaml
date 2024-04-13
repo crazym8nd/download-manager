@@ -1,6 +1,7 @@
 version: "3"
 services:
   dl_manager:
+    container_name: download-manager-master-app
     image: dl_manager
     extra_hosts:
       - "host.docker.internal:host-gateway"

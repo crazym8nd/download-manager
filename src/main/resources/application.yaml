@@ -2,13 +2,15 @@ server:
   port: 8083
 
 spring:
+  flyway:
+    user: root
+    password: 666666
+    url: jdbc:mysql://host.docker.internal:3306/dl_manager
+    locations: classpath:db/migration
   r2dbc:
     url: r2dbc:mysql://host.docker.internal:3306/dl_manager
     username: root
     password: 666666
-  sql:
-    init:
-      mode: always
 jwt:
   password:
     encoder:

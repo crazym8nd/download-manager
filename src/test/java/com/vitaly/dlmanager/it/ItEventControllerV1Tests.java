@@ -1,6 +1,5 @@
 package com.vitaly.dlmanager.it;
 
-import com.vitaly.dlmanager.config.DatabasePopulationListener;
 import com.vitaly.dlmanager.config.MysqlTestContainerConfig;
 import com.vitaly.dlmanager.dto.AuthRequestDto;
 import com.vitaly.dlmanager.dto.AuthResponseDto;
@@ -17,6 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
@@ -29,10 +29,7 @@ import static org.springframework.security.test.web.reactive.server.SecurityMock
 
 @Import({MysqlTestContainerConfig.class})
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@TestExecutionListeners(
-        listeners = DatabasePopulationListener.class,
-        mergeMode = TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS
-)
+@ActiveProfiles("test")
 public class ItEventControllerV1Tests {
     @Autowired
     private WebTestClient webTestClient;

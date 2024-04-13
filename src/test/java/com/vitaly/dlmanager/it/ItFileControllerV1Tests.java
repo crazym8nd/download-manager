@@ -3,16 +3,12 @@ package com.vitaly.dlmanager.it;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.vitaly.dlmanager.config.DatabasePopulationListener;
 import com.vitaly.dlmanager.config.MysqlTestContainerConfig;
+import com.vitaly.dlmanager.config.aws.AwsProperties;
 import com.vitaly.dlmanager.dto.*;
-import com.vitaly.dlmanager.entity.event.EventEntity;
 import com.vitaly.dlmanager.entity.file.FileEntity;
-import com.vitaly.dlmanager.repository.EventRepository;
 import com.vitaly.dlmanager.repository.FileRepository;
-import com.vitaly.dlmanager.repository.UserRepository;
 import com.vitaly.dlmanager.util.UserDataUtils;
-import net.bytebuddy.utility.dispatcher.JavaDispatcher;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -21,42 +17,37 @@ import org.springframework.context.annotation.Import;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
-import org.springframework.http.ReactiveHttpOutputMessage;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.web.reactive.server.WebTestClient;
-import org.springframework.web.reactive.function.BodyInserter;
 import org.springframework.web.reactive.function.BodyInserters;
-import org.testcontainers.containers.localstack.LocalStackContainer;
-import org.testcontainers.utility.DockerImageName;
 import reactor.core.publisher.Mono;
+import software.amazon.awssdk.services.s3.S3AsyncClient;
 
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.springSecurity;
 
 @Import({MysqlTestContainerConfig.class})
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@TestExecutionListeners(
-        listeners = DatabasePopulationListener.class,
-        mergeMode = TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS
-)
+@ActiveProfiles("test")
 public class ItFileControllerV1Tests {
+
     @Autowired
     private WebTestClient webTestClient;
 
     @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private EventRepository eventRepository;
-
-    @Autowired
     private FileRepository fileRepository;
+
+    @Autowired
+    private S3AsyncClient s3AsyncClient;
+
+    @Autowired
+    private AwsProperties s3ConfigProperties;
 
     @Autowired
     public void loadContext(final ApplicationContext applicationContext) {
@@ -67,8 +58,10 @@ public class ItFileControllerV1Tests {
                 .build();
     }
 
-    public static LocalStackContainer localstack = new LocalStackContainer(DockerImageName.parse("localstack/localstack"))
-            .withServices(LocalStackContainer.Service.S3);
+    @Test
+    void testBucket(){
+        assertThat(this.s3AsyncClient.listBuckets()).isNotNull();
+    }
 
     private AuthResponseDto prepareAuthResponseForJwt(AuthRequestDto authRequestDto) {
         return webTestClient.post().uri("/api/v1/auth/login")

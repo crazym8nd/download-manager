@@ -22,10 +22,12 @@ dependencies {
     implementation 'org.springframework.session:spring-session-core'
     implementation 'org.springframework.boot:spring-boot-starter-data-r2dbc'
 
-
+    //migration
+    implementation 'org.flywaydb:flyway-core'
     //mysql
     implementation "io.asyncer:r2dbc-mysql:$r2dbcMysqlVersion"
     implementation "com.mysql:mysql-connector-j:$mysqlConnectorVersion"
+    implementation 'org.flywaydb:flyway-mysql'
 
     //lombok
     implementation "org.projectlombok:lombok:$lombokVersion"
