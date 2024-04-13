@@ -2,6 +2,8 @@ server:
   port: 8083
 
 spring:
+  main:
+    allow-bean-definition-overriding: true
   flyway:
     user: root
     password: 666666
@@ -20,11 +22,10 @@ jwt:
   secret: 619a6f12e315d17239d4414f9fe1abf6f1a890713086b34d470446d139a25b74
   expiration: 3600
   issuer: dl_manager
-
 aws:
-  accesskey: YCAJEp2wHyggJ_GqDqp-x-jrN
-  secretkey: YCPAghtWY_l3ErNA-AmD9Lzv0ymU6ynOboFnQdW3
-  region: ru-central1
-  s3BucketName: springfluxr2dbc
+  accesskey: test
+  secretkey: test
+  region: us-east-1
+  s3BucketName: r2dbcspringapp
   multipartMinPartSize: 5242880
-  endpoint: https://storage.yandexcloud.net/
+  endpoint: http://localhost:4566

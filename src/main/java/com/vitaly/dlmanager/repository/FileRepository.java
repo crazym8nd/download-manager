@@ -14,5 +14,6 @@ public interface FileRepository extends R2dbcRepository<FileEntity, Long> {
     @Query("UPDATE files SET status = 'DELETED' WHERE id = :id")
     Mono<Void> deleteById(Long id);
 
+    Mono<FileEntity> findByFileName(String fileName);
     Flux<FileEntity> findAllByUserId(Long userId);
 }

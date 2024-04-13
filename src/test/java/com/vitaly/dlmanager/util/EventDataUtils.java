@@ -74,7 +74,7 @@ public class EventDataUtils {
     public static EventDto getEventDtoForSavingByUser() {
         return EventDto.builder()
                 .userId(1L)
-                .fileId(4L)
+                .fileId(8L)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .status(Status.ACTIVE)

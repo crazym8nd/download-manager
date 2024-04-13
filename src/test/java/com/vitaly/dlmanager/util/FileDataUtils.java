@@ -1,6 +1,5 @@
 package com.vitaly.dlmanager.util;
 
-import com.vitaly.dlmanager.dto.FileDto;
 import com.vitaly.dlmanager.entity.Status;
 import com.vitaly.dlmanager.entity.file.FileEntity;
 

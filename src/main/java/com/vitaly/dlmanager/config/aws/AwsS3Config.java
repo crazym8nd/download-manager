@@ -18,19 +18,17 @@ import java.time.Duration;
 @RequiredArgsConstructor
 @Configuration
 public class AwsS3Config {
-
     private final AwsProperties s3ConfigProperties;
 
     @Bean
     public S3AsyncClient s3AsyncClient(AwsCredentialsProvider awsCredentialsProvider) {
-
-        return S3AsyncClient.builder()
-                .httpClient(sdkAsyncHttpClient())
-                .region(Region.of(s3ConfigProperties.getRegion()))
-                .credentialsProvider(awsCredentialsProvider)
-                .endpointOverride(URI.create(s3ConfigProperties.getEndpoint()))
-                .forcePathStyle(true)
-                .serviceConfiguration(s3Configuration()).build();
+         return S3AsyncClient.builder()
+                 .httpClient(sdkAsyncHttpClient())
+                 .region(Region.of(s3ConfigProperties.getRegion()))
+                 .credentialsProvider(awsCredentialsProvider)
+                 .endpointOverride(URI.create(s3ConfigProperties.getEndpoint()))
+                 .forcePathStyle(true)
+                 .serviceConfiguration(s3Configuration()).build();
     }
 
     private SdkAsyncHttpClient sdkAsyncHttpClient() {

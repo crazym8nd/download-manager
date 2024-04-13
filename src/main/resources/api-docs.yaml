@@ -1,0 +1,411 @@
+openapi: 3.0.1
+info:
+  title: Download manager WebFlux R2DBC API
+  version: v1
+servers:
+- url: http://localhost:8083
+  description: server url
+paths:
+  /api/v1/users/{id}:
+    get:
+      tags:
+      - user-controller-v-1
+      summary: Get a user by ID
+      operationId: getUserById
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDto'
+    put:
+      tags:
+      - user-controller-v-1
+      operationId: update
+      summary: Update a user
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserDto'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDto'
+    delete:
+      tags:
+      - user-controller-v-1
+      operationId: delete
+      summary: Delete a user
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+  /api/v1/events/{id}:
+    get:
+      tags:
+      - event-controller-v-1
+      operationId: getEventById
+      summary: Get an event by ID
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventDto'
+    put:
+      tags:
+      - event-controller-v-1
+      operationId: updateEvent
+      summary: Update an event
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventDto'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventDto'
+    delete:
+      tags:
+      - event-controller-v-1
+      operationId: deleteEvent
+      summary: Delete an event
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+  /api/v1/users:
+    get:
+      tags:
+      - user-controller-v-1
+      operationId: getAllUsers
+      summary: Get all users
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserDto'
+    post:
+      tags:
+      - user-controller-v-1
+      operationId: save
+      summary: Save a user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserDto'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDto'
+  /api/v1/files:
+    get:
+      tags:
+      - file-controller-v-1
+      operationId: getListOfFiles
+      summary: Get all files
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SuccessResponse'
+    post:
+      tags:
+      - file-controller-v-1
+      operationId: upload
+      summary: Upload a file
+      requestBody:
+        content:
+          application/json:
+            schema:
+              required:
+              - form-data
+              type: object
+              properties:
+                form-data:
+                  type: string
+                  format: binary
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+  /api/v1/events:
+    get:
+      tags:
+      - event-controller-v-1
+      operationId: getAllEvents
+      summary: Get all events
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EventDto'
+    post:
+      tags:
+      - event-controller-v-1
+      operationId: saveEvent
+      summary: Save an event
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventDto'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventDto'
+  /api/v1/auth/register:
+    post:
+      tags:
+      - auth-rest-controller-v-1
+      operationId: register
+      summary: Register a user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserDto'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDto'
+  /api/v1/auth/login:
+    post:
+      tags:
+      - auth-rest-controller-v-1
+      operationId: login
+      summary: Login a user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthRequestDto'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponseDto'
+  /api/v1/files/{id}:
+    get:
+      tags:
+      - file-controller-v-1
+      operationId: download
+      summary: Download a file
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+    delete:
+      tags:
+      - file-controller-v-1
+      operationId: deleteFile
+      summary: Delete a file
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+  /api/v1/auth/info:
+    get:
+      tags:
+      - auth-rest-controller-v-1
+      operationId: getUserInfo
+      summary: Get user info
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDto'
+components:
+  schemas:
+    EventDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        user_id:
+          type: integer
+          format: int64
+        file_id:
+          type: integer
+          format: int64
+    UserDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        username:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+        role:
+          type: string
+          enum:
+          - ADMIN
+          - MODERATOR
+          - USER
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        status:
+          type: string
+          enum:
+          - ACTIVE
+          - DELETED
+        events:
+          type: array
+          items:
+            $ref: '#/components/schemas/EventDto'
+    SuccessResponse:
+      type: object
+      properties:
+        data:
+          type: object
+        message:
+          type: string
+    AuthRequestDto:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+    AuthResponseDto:
+      type: object
+      properties:
+        user_id:
+          type: integer
+          format: int64
+        token:
+          type: string
+        issued_at:
+          type: string
+          format: date-time
+        expires_at:
+          type: string
+          format: date-time

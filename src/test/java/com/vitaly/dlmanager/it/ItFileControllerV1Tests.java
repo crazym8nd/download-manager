@@ -4,13 +4,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.vitaly.dlmanager.config.MysqlTestContainerConfig;
-import com.vitaly.dlmanager.config.aws.AwsProperties;
-import com.vitaly.dlmanager.dto.*;
+import com.vitaly.dlmanager.dto.AuthRequestDto;
+import com.vitaly.dlmanager.dto.AuthResponseDto;
+import com.vitaly.dlmanager.dto.FileDto;
+import com.vitaly.dlmanager.dto.SuccessResponse;
 import com.vitaly.dlmanager.entity.file.FileEntity;
 import com.vitaly.dlmanager.repository.FileRepository;
 import com.vitaly.dlmanager.util.UserDataUtils;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Import;
@@ -18,23 +22,25 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.BodyInserters;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import software.amazon.awssdk.services.s3.S3AsyncClient;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.springSecurity;
 
 @Import({MysqlTestContainerConfig.class})
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class ItFileControllerV1Tests {
 
     @Autowired
@@ -46,8 +52,9 @@ public class ItFileControllerV1Tests {
     @Autowired
     private S3AsyncClient s3AsyncClient;
 
-    @Autowired
-    private AwsProperties s3ConfigProperties;
+    @Value("${aws.s3BucketName}")
+    private String bucketName;
+
 
     @Autowired
     public void loadContext(final ApplicationContext applicationContext) {
@@ -58,10 +65,6 @@ public class ItFileControllerV1Tests {
                 .build();
     }
 
-    @Test
-    void testBucket(){
-        assertThat(this.s3AsyncClient.listBuckets()).isNotNull();
-    }
 
     private AuthResponseDto prepareAuthResponseForJwt(AuthRequestDto authRequestDto) {
         return webTestClient.post().uri("/api/v1/auth/login")
@@ -92,6 +95,7 @@ public class ItFileControllerV1Tests {
     }
 
     //user positive
+
     @Test
     public void givenUserRoleUser_whenGetAllHisFiles_thenSuccessResponse() {
         //given
@@ -152,8 +156,15 @@ public class ItFileControllerV1Tests {
                 .header("Authorization", "Bearer " + authResponseDto.getToken())
                 .body(uploadFileForTesting(fileName))
                 .exchange();
+
+        Flux<FileEntity> fileFlux = Flux.interval(Duration.ofMillis(500))
+                .flatMap(tick -> fileRepository.findByFileName(fileName))
+                .filter(Objects::nonNull)
+                .take(1)
+                .timeout(Duration.ofSeconds(10));
+        Long fileId = fileFlux.blockFirst().getId();
         //when
-        WebTestClient.ResponseSpec result = webTestClient.get().uri("/api/v1/files/1" )
+        WebTestClient.ResponseSpec result = webTestClient.get().uri("/api/v1/files/{id}", fileId)
                 .header("Authorization", "Bearer " + authResponseDto.getToken())
                 .exchange();
 
@@ -166,7 +177,7 @@ public class ItFileControllerV1Tests {
                 });
     }
     @Test
-    public void givenUserRoleUser_whenDeleteEvent_thenSuccessResponse() {
+    public void givenUserRoleUser_whenDeleteFile_thenSuccessResponse() {
         //given
         AuthRequestDto authRequestDto = UserDataUtils.getUserDtoForLogin();
         AuthResponseDto authResponseDto = prepareAuthResponseForJwt(authRequestDto);
@@ -316,8 +327,14 @@ public class ItFileControllerV1Tests {
                 .header("Authorization", "Bearer " + authResponseDto.getToken())
                 .body(uploadFileForTesting(fileName))
                 .exchange();
+        Flux<FileEntity> fileFlux = Flux.interval(Duration.ofMillis(500))
+                .flatMap(tick -> fileRepository.findByFileName(fileName))
+                .filter(Objects::nonNull)
+                .take(1)
+                .timeout(Duration.ofSeconds(10));
+        Long fileId = fileFlux.blockFirst().getId();
         //when
-        WebTestClient.ResponseSpec result = webTestClient.get().uri("/api/v1/files/1" )
+        WebTestClient.ResponseSpec result = webTestClient.get().uri("/api/v1/files/{id}", fileId )
                 .header("Authorization", "Bearer " + authResponseDto.getToken())
                 .exchange();
 
@@ -480,8 +497,14 @@ public class ItFileControllerV1Tests {
                 .header("Authorization", "Bearer " + authResponseDto.getToken())
                 .body(uploadFileForTesting(fileName))
                 .exchange();
+        Flux<FileEntity> fileFlux = Flux.interval(Duration.ofMillis(500))
+                .flatMap(tick -> fileRepository.findByFileName(fileName))
+                .filter(Objects::nonNull)
+                .take(1)
+                .timeout(Duration.ofSeconds(10));
+        Long fileId = fileFlux.blockFirst().getId();
         //when
-        WebTestClient.ResponseSpec result = webTestClient.get().uri("/api/v1/files/1" )
+        WebTestClient.ResponseSpec result = webTestClient.get().uri("/api/v1/files/{id}", fileId )
                 .header("Authorization", "Bearer " + authResponseDto.getToken())
                 .exchange();
 
