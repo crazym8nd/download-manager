@@ -1,10 +1,12 @@
 ### Guide to run app
+
 Here is [API Documentation](src/main/resources/api-docs.yaml)
 
 To run this application you need to install docker (https://docs.docker.com/get-docker/).
 1. Run docker.
 2. Clone the repository to your local machine.
 3. Run docker compose up from root directory.
+4. Send POST request to http://localhost:8083/api/v1/auth/login witth body {"username": "admin","password": "testtest"} to get JWT, then use it as Authorization header.
 You can also use this application with your existing AWS S3 account, to do that - you need to change credentials in [application.yaml](src/main/resources/application.yaml)
 
 If something goes wrong:
